@@ -10,14 +10,15 @@ public class ClientTest {
             System.exit(2);
         }
 
-        CommandControllerClient ccc = new CommandControllerClient(args[0]);
+        String path = args[0];
+        CommandControllerClient ccc = new CommandControllerClient(path);
 
         Scanner sc = new Scanner(System.in);
 
 //        while (true) {
 //            System.out.print(">>");
 //            String cmd = sc.nextLine();
-//            if (cmd.equals("exit")) break;
+//            if (cmd.equals("STOP")) break;
 //            System.out.println(cmd + " : " + ccc.command(cmd));
 //        }
 

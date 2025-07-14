@@ -63,13 +63,14 @@ public class CommandControllerServer implements Runnable {
     }
 
     /**
-     * サーバーを止めるリクエストをする<br>
-     * 次回の{@link CommandControllerClient}から受信後再度の受信をしない
-     *
-     * @deprecated
+     * 瞬時にサーバーを強制的に止める
      */
     public void stop() {
         run = false;
+        try {
+            if (serverSocket != null) serverSocket.close();
+        } catch (IOException ignored) {
+        }
     }
 
     protected void setCommandRule(CommandRule commandRule) {
@@ -79,6 +80,7 @@ public class CommandControllerServer implements Runnable {
     @Override
     public void run() {
         run = true;
+        int err = 0;
         while (run) {
             try (Socket sock = serverSocket.accept()) {
                 try (InputStream in = sock.getInputStream(); OutputStream out = sock.getOutputStream()) {
@@ -105,8 +107,9 @@ public class CommandControllerServer implements Runnable {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+                err = 0;
             } catch (IOException e) {
-                e.printStackTrace();
+                if (1 < err++) e.printStackTrace();
             }
         }
         run = false;
