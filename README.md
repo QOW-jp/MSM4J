@@ -1,7 +1,7 @@
 # MSM4J (MinecraftServerManager4J)
 
 ### Requirements
-Java 17 or later
+Java 21 or later
 
 ## Getting started
 | 項目  | 詳細 |
@@ -9,9 +9,14 @@ Java 17 or later
 | OS | Ubuntu 22.04 LTS |
 | Edition | Java |
 
-1. Server
-2. Client
-3. msm4jconfig.json
+
+```
+1. java ServerTest [jsonPath]
+2. java ClientTest [jsonPath]
+
+※[jsonPath] = msm4jconfig.json
+args[0] = jsonPath
+```
 
 #### ServerTest.java
 ```java
@@ -23,39 +28,25 @@ import com.qow.minecraft.server.MinecraftServerManager4J;
 import java.io.IOException;
 
 public class ServerTest {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException, IOException, MinecraftEditionException {
         if (args.length != 1) {
             System.err.println("args.length is not 1");
             System.exit(2);
         }
+        String path = args[0];
+
         CommandRule commandRule = new CommandRule();
-        MinecraftServerManager4J msManager;
-        try {
-            msManager = new MinecraftServerManager4J(args[0], commandRule);
-        } catch (IOException | MinecraftEditionException e) {
-            throw new RuntimeException(e);
-        }
+        MinecraftServerManager4J msManager = new MinecraftServerManager4J(path, commandRule);
+        Runtime.getRuntime().addShutdownHook(new Thread(msManager::killProcess));
 
         CommandControllerServer ccs = msManager.getCommandControllerServer();
 
-        Runtime.getRuntime().addShutdownHook(new Thread(msManager::killProcess));
-
-        try {
-            Thread.sleep(1000);
-            System.out.println("start MSM4J : " + msManager.start());
-        } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-
+        System.out.println("start MSM4J : " + msManager.start());
         System.out.println("start CommandControllerServer : " + ccs.start());
 
-        try {
-            int exitCode = msManager.waitFor();
-            ccs.stop();
-            System.out.println("server exit code " + exitCode);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        int exitCode = msManager.waitFor();
+        ccs.stop();
+        System.out.println("server exit code " + exitCode);
     }
 }
 ```
@@ -74,14 +65,15 @@ public class ClientTest {
             System.exit(2);
         }
 
-        CommandControllerClient ccc = new CommandControllerClient(args[0]);
+        String path = args[0];
+        CommandControllerClient ccc = new CommandControllerClient(path);
 
         Scanner sc = new Scanner(System.in);
 
 //        while (true) {
 //            System.out.print(">>");
 //            String cmd = sc.nextLine();
-//            if (cmd.equals("exit")) break;
+//            if (cmd.equals("STOP")) break;
 //            System.out.println(cmd + " : " + ccc.command(cmd));
 //        }
 
