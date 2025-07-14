@@ -28,7 +28,7 @@ public class ThreadStopper {
 
     /**
      * 停止を強制的に解除する<br>
-     * {@link ThreadStopper#setReady(boolean true)}が内部で呼ばれている<br>
+     * {@link ThreadStopper#setReady(boolean)}が内部で呼ばれている<br>
      * もとより停止していなかった場合は何もしない
      */
     public void start() {
