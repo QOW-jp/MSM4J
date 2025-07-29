@@ -13,7 +13,7 @@ import java.util.Arrays;
 /**
  * {@link CommandControllerServer}への信号を送る
  *
- * @version 2025/07/14
+ * @version 2025/07/29
  * @since 1.0.0
  */
 public class CommandControllerClient {
@@ -29,7 +29,7 @@ public class CommandControllerClient {
     public CommandControllerClient(String jsonPath) {
         JsonReader jsonReader = new JsonReader(jsonPath);
         JSONObject controlJs = jsonReader.getJSONObject("control");
-        ip = controlJs.getString("client-ip");
+        ip = controlJs.getString("server-ip");
         port = controlJs.getInt("port");
         byteSize = controlJs.getInt("byte-size");
     }
