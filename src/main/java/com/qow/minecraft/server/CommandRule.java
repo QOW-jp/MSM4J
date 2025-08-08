@@ -124,13 +124,13 @@ public class CommandRule {
         if (line.contains("joined the game")) {
             SimpleDateFormat sdf = new SimpleDateFormat(notificationTimeFormat);
             //プレイヤー名抜き出し
-            String name = line.split(" ")[4];
-            new Webhook(webhookUrl, name + " LOG IN " + sdf.format(new Date()), Color.WHITE);
-        } else if (line.contains("lost connection: Disconnected")) {
+            String name = line.split(" ")[3];
+            new Webhook(webhookUrl, name + " LOG IN " + sdf.format(new Date()), Color.GREEN);
+        } else if (line.contains("left the game")) {
             SimpleDateFormat sdf = new SimpleDateFormat(notificationTimeFormat);
             //プレイヤー名抜き出し
-            String name = line.split(" ")[4];
-            new Webhook(webhookUrl, name + " LOG OUT " + sdf.format(new Date()), Color.BLACK);
+            String name = line.split(" ")[3];
+            new Webhook(webhookUrl, name + " LOG OUT " + sdf.format(new Date()), Color.RED);
         }
     }
 

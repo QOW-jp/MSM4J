@@ -6,7 +6,7 @@
 
     <groupId>com.qow.minecraft</groupId>
     <artifactId>MSM4J</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
 
     <properties>
         <java.version>21</java.version>
@@ -32,9 +32,10 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.11.2</version>
                 <configuration>
                     <author>true</author>
-                    <source>17</source>
+                    <source>21</source>
                     <show>protected</show>
                     <encoding>UTF-8</encoding>
                     <charset>UTF-8</charset>
