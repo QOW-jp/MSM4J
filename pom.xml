@@ -4,9 +4,10 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.qow.minecraft</groupId>
-    <artifactId>MSM4J</artifactId>
-    <version>1.0.3</version>
+    <groupId>com.qow</groupId>
+    <artifactId>msm4j</artifactId>
+    <version>1.0.4</version>
+    <packaging>jar</packaging>
 
     <properties>
         <java.version>21</java.version>
@@ -31,19 +32,6 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.11.2</version>
-                <configuration>
-                    <author>true</author>
-                    <source>21</source>
-                    <show>protected</show>
-                    <encoding>UTF-8</encoding>
-                    <charset>UTF-8</charset>
-                    <docencoding>UTF-8</docencoding>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>3.0.0</version>
                 <configuration>
@@ -58,8 +46,45 @@
                     <execution>
                         <id>make-assembly</id>
                         <phase>package</phase>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.3.0</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
                         <goals>
-                            <goal>single</goal>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.6.3</version>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-install-plugin</artifactId>
+                <version>3.1.1</version>
+                <executions>
+                    <execution>
+                        <id>auto-install</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>install</goal>
                         </goals>
                     </execution>
                 </executions>
