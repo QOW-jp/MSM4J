@@ -52,7 +52,7 @@
     "bind-ip": true,
     "server-ip": "localhost",
     "client-ip": "localhost",
-    "port": 51100,
+    "port": 9999,
     "byte-size": 1024
   }
 }

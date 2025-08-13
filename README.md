@@ -1,14 +1,15 @@
 # MSM4J (MinecraftServerManager4J)
 
 ### Requirements
+
 Java 21 or later
 
 ## Getting started
-| 項目  | 詳細 |
-| ------------- | ------------- |
-| OS | Ubuntu 22.04 LTS |
-| Edition | Java |
 
+| 項目      | 詳細               |
+|---------|------------------|
+| OS      | Ubuntu 22.04 LTS |
+| Edition | Java             |
 
 ```
 1. java ServerTest [jsonPath]
@@ -19,6 +20,7 @@ args[0] = jsonPath
 ```
 
 #### ServerTest.java
+
 ```java
 import com.qow.minecraft.server.CommandControllerServer;
 import com.qow.minecraft.server.CommandRule;
@@ -52,6 +54,7 @@ public class ServerTest {
 ```
 
 #### ClientTest.java
+
 ```java
 import com.qow.minecraft.server.CommandControllerClient;
 
@@ -87,6 +90,7 @@ public class ClientTest {
 ```
 
 #### msm4jconfig.json
+
 ```json
 {
   "edition": "java",
@@ -142,7 +146,7 @@ public class ClientTest {
     "bind-ip": true,
     "server-ip": "localhost",
     "client-ip": "localhost",
-    "port": 51100,
+    "port": 9999,
     "byte-size": 1024
   }
 }
