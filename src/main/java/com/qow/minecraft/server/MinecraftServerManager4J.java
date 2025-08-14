@@ -12,11 +12,11 @@ import java.io.IOException;
  * 手動でバックアップなどを取る場合は{@link ProcessManager}を使用する<br>
  * 基本的にjsonファイル形式でconfigを管理しており、パスや通知の有無はjsonファイルで設定する
  *
- * @version 2025/07/14
+ * @version 2025/08/14
  * @since 1.0.0
  */
 public class MinecraftServerManager4J {
-    private final static String EXE_BE = "LD_LIBRARY_PATH=";
+    private final static String EXE_BE = "LD_LIBRARY_PATH= ";
     private final static String EXE_JE = "java";
 
     private final CommandControllerServer ccs;
