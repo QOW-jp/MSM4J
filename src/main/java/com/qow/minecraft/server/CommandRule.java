@@ -7,7 +7,9 @@ import java.awt.*;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Minecraftのコマンドラインへ送るコマンドを制御する
@@ -16,16 +18,19 @@ import java.util.Date;
  * @since 1.0.0
  */
 public class CommandRule {
+    private final List<String> playerList;
     private BufferedWriter bufferedWriter;
     private ProcessManager processManager;
     private String webhookUrl;
     private String notificationTimeFormat;
     private boolean serverStatusNotification, logInOutNotification;
+    private int logInOutIndex;
 
     /**
-     * バッファーの初期化
+     * コマンド出力バッファーとプレイヤーネームリストの初期化
      */
     public CommandRule() {
+        playerList = new ArrayList<>();
         bufferedWriter = null;
     }
 
@@ -36,28 +41,32 @@ public class CommandRule {
      * @throws IOException {@link ProcessManager}のコマンドラインが無効化されていた場合またはバックアップに不備があった場合
      */
     public void command(String line) throws IOException {
-        if (line.equals("BACKUP")) {
-            try {
-                processManager.backup(true, true);
-            } catch (InterruptedException e) {
-                System.out.println(e.getMessage());
+        switch (line) {
+            case "BACKUP" -> {
+                try {
+                    processManager.backup(true, true);
+                } catch (InterruptedException e) {
+                    System.out.println(e.getMessage());
+                }
             }
-        } else if (line.equals("START")) {
-            processManager.start();
-        } else if (line.equals("STOP")) {
-            if (processManager.getServerStatus()) processManager.requestStopServer(0, "");
-        } else if (line.equals("RESTART")) {
-            try {
-                processManager.restart();
-            } catch (InterruptedException e) {
-                System.out.println(e.getMessage());
+            case "START" -> processManager.start();
+            case "STOP" -> {
+                if (processManager.getServerStatus()) processManager.requestStopServer(0, "");
             }
-        } else {
-            if (!processManager.getServerStatus()) return;
-            processManager.log(line);
-            bufferedWriter.write(line);
-            bufferedWriter.newLine();
-            bufferedWriter.flush();
+            case "RESTART" -> {
+                try {
+                    processManager.restart();
+                } catch (InterruptedException e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+            default -> {
+                if (!processManager.getServerStatus()) return;
+                processManager.log(line);
+                bufferedWriter.write(line);
+                bufferedWriter.newLine();
+                bufferedWriter.flush();
+            }
         }
     }
 
@@ -79,7 +88,12 @@ public class CommandRule {
      * @return プレイヤーの発言だった場合true
      */
     public boolean isPlayerComment(String line) {
-        return line.matches(".*<.*>.*");
+        for (String name : playerList) {
+            if (line.matches(".*<" + name + ">.*")) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -103,6 +117,7 @@ public class CommandRule {
         webhookUrl = json.getString("webhook-url");
         serverStatusNotification = json.getBoolean("server-status");
         logInOutNotification = json.getBoolean("log-in-out");
+        if (logInOutNotification) logInOutIndex = json.getInt("log-in-out-index");
         notificationTimeFormat = json.getString("time-format");
     }
 
@@ -124,21 +139,23 @@ public class CommandRule {
         if (line.contains("joined the game")) {
             SimpleDateFormat sdf = new SimpleDateFormat(notificationTimeFormat);
             //プレイヤー名抜き出し
-            String name = line.split(" ")[3];
+            String name = line.split(" ")[logInOutIndex];
+            playerList.add(name);
             new Webhook(webhookUrl, name + " LOG IN " + sdf.format(new Date()), Color.GREEN);
         } else if (line.contains("left the game")) {
             SimpleDateFormat sdf = new SimpleDateFormat(notificationTimeFormat);
             //プレイヤー名抜き出し
-            String name = line.split(" ")[3];
+            String name = line.split(" ")[logInOutIndex];
+            playerList.remove(name);
             new Webhook(webhookUrl, name + " LOG OUT " + sdf.format(new Date()), Color.RED);
         }
     }
 
     private void serverStatus(String line) {
-        if (line.contains("[Server thread/INFO]: Done")) {
+        if (line.contains("]: Done")) {
             SimpleDateFormat sdf = new SimpleDateFormat(notificationTimeFormat);
             new Webhook(webhookUrl, "SERVER START " + sdf.format(new Date()), Color.WHITE);
-        } else if (line.contains("[Server thread/INFO]: Stopping the server")) {
+        } else if (line.contains("]: Stopping the server")) {
             SimpleDateFormat sdf = new SimpleDateFormat(notificationTimeFormat);
             new Webhook(webhookUrl, "SERVER STOP " + sdf.format(new Date()), Color.BLACK);
         }

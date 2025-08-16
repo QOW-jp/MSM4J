@@ -45,6 +45,7 @@
     "server-wave": true,
     "server-status": true,
     "log-in-out": true,
+    "log-in-out-index": 3,
     "time-format": "HH:mm:ss"
   },
   "control": {
