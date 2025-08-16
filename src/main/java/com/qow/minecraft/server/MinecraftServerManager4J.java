@@ -12,11 +12,11 @@ import java.io.IOException;
  * 手動でバックアップなどを取る場合は{@link ProcessManager}を使用する<br>
  * 基本的にjsonファイル形式でconfigを管理しており、パスや通知の有無はjsonファイルで設定する
  *
- * @version 2025/08/14
+ * @version 2025/08/16
  * @since 1.0.0
  */
 public class MinecraftServerManager4J {
-    private final static String EXE_BE = "LD_LIBRARY_PATH= ";
+    private final static String EXE_BE = "LD_LIBRARY_PATH=. ./bedrock_server";
     private final static String EXE_JE = "java";
 
     private final CommandControllerServer ccs;
@@ -47,32 +47,35 @@ public class MinecraftServerManager4J {
         this.commandRule = commandRule;
         commandRule.setWebhook(jsonReader.getJSONObject("notification"));
 
-        if (edition.equals("java")) {
-            JSONObject jvmArgs = jsonReader.getJSONObject("jvm-args");
-            JSONArray beforeArgs = jvmArgs.getJSONArray("before");
-            JSONArray afterArgs = jvmArgs.getJSONArray("after");
+        switch (edition) {
+            case "java" -> {
+                JSONObject jvmArgs = jsonReader.getJSONObject("jvm-args");
+                JSONArray beforeArgs = jvmArgs.getJSONArray("before");
+                JSONArray afterArgs = jvmArgs.getJSONArray("after");
 
-            String[] exe = new String[beforeArgs.length() + afterArgs.length() + 2];
+                String[] exe = new String[beforeArgs.length() + afterArgs.length() + 2];
 
-            exe[0] = EXE_JE;
-            for (int i = 0; i < beforeArgs.length(); i++) {
-                exe[i + 1] = beforeArgs.getString(i);
+                exe[0] = EXE_JE;
+                for (int i = 0; i < beforeArgs.length(); i++) {
+                    exe[i + 1] = beforeArgs.getString(i);
+                }
+                exe[beforeArgs.length()] = "-jar";
+                exe[beforeArgs.length() + 1] = serverPath;
+                for (int i = 0; i < afterArgs.length(); i++) {
+                    exe[beforeArgs.length() + i + 2] = afterArgs.getString(i);
+                }
+                processManager = new ProcessManager(jsonReader, exe);
+                processManager.connectCommandRule(commandRule);
             }
-            exe[beforeArgs.length()] = "-jar";
-            exe[beforeArgs.length() + 1] = serverPath;
-            for (int i = 0; i < afterArgs.length(); i++) {
-                exe[beforeArgs.length() + i + 2] = afterArgs.getString(i);
+            case "bedrock" -> {
+                processManager = new ProcessManager(jsonReader, new String[]{EXE_BE});
+                processManager.connectCommandRule(commandRule);
             }
-            processManager = new ProcessManager(jsonReader, exe);
-            processManager.connectCommandRule(commandRule);
-        } else if (edition.equals("bedrock")) {
-            processManager = new ProcessManager(jsonReader, new String[]{EXE_BE + serverPath});
-            processManager.connectCommandRule(commandRule);
-        } else if (edition.equals("cmd")) {
-            processManager = new ProcessManager(jsonReader, new String[]{serverPath});
-            processManager.connectCommandRule(commandRule);
-        } else {
-            throw new MinecraftEditionException("unsupported edition was picked.");
+            case "cmd" -> {
+                processManager = new ProcessManager(jsonReader, new String[]{serverPath});
+                processManager.connectCommandRule(commandRule);
+            }
+            default -> throw new MinecraftEditionException("unsupported edition was picked.");
         }
     }
 
