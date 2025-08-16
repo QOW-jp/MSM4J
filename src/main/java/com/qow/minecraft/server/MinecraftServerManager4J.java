@@ -68,7 +68,7 @@ public class MinecraftServerManager4J {
                 processManager.connectCommandRule(commandRule);
             }
             case "bedrock" -> {
-                processManager = new ProcessManager(jsonReader, new String[]{EXE_BE});
+                processManager = new ProcessManager(jsonReader, EXE_BE.split(" "));
                 processManager.connectCommandRule(commandRule);
             }
             case "cmd" -> {
