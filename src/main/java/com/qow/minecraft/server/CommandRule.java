@@ -12,7 +12,7 @@ import java.util.Date;
 /**
  * Minecraftのコマンドラインへ送るコマンドを制御する
  *
- * @version 2025/08/15
+ * @version 2025/08/16
  * @since 1.0.0
  */
 public class CommandRule {
@@ -79,7 +79,7 @@ public class CommandRule {
      * @return プレイヤーの発言だった場合true
      */
     public boolean isPlayerComment(String line) {
-        return line.matches("<.*>.*");
+        return line.matches(".*<.*>.*");
     }
 
     /**
