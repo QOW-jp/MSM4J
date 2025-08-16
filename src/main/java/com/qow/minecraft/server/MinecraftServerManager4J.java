@@ -12,11 +12,11 @@ import java.io.IOException;
  * 手動でバックアップなどを取る場合は{@link ProcessManager}を使用する<br>
  * 基本的にjsonファイル形式でconfigを管理しており、パスや通知の有無はjsonファイルで設定する
  *
- * @version 2025/08/16
+ * @version 2025/08/17
  * @since 1.0.0
  */
 public class MinecraftServerManager4J {
-    private final static String EXE_BE = "LD_LIBRARY_PATH=. ./bedrock_server";
+    private final static String EXE_BE = "LD_LIBRARY_PATH";
     private final static String EXE_JE = "java";
 
     private final CommandControllerServer ccs;
@@ -68,7 +68,8 @@ public class MinecraftServerManager4J {
                 processManager.connectCommandRule(commandRule);
             }
             case "bedrock" -> {
-                processManager = new ProcessManager(jsonReader, EXE_BE.split(" "));
+                processManager = new ProcessManager(jsonReader, new String[]{serverPath});
+                processManager.environment(EXE_BE, ".");
                 processManager.connectCommandRule(commandRule);
             }
             case "cmd" -> {

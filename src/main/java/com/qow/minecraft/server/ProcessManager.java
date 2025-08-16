@@ -19,7 +19,7 @@ import java.util.Date;
  * Minecraftを実行する{@link ProcessBuilder}を管理する<br>
  * 取得するには{@link CommandRule#getProcessManager()}を使用する
  *
- * @version 2025/08/16
+ * @version 2025/08/17
  * @since 1.0.0
  */
 public class ProcessManager {
@@ -230,5 +230,9 @@ public class ProcessManager {
         waitForProcessStart();
         if (process == null) return -1;
         return process.waitFor();
+    }
+
+    protected void environment(String ldLibraryPath, String s) {
+        pb.environment().put(ldLibraryPath, s);
     }
 }
