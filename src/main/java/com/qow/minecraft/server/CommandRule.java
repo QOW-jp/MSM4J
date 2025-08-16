@@ -148,14 +148,26 @@ public class CommandRule {
             String name = line.split(" ")[logInOutIndex];
             playerList.remove(name);
             new Webhook(webhookUrl, name + " LOG OUT " + sdf.format(new Date()), Color.RED);
+        } else if (line.contains("Player connected")) {
+            SimpleDateFormat sdf = new SimpleDateFormat(notificationTimeFormat);
+            //プレイヤー名抜き出し
+            String name = line.split(" ")[logInOutIndex].replace(",", "");
+            playerList.add(name);
+            new Webhook(webhookUrl, name + " LOG IN " + sdf.format(new Date()), Color.GREEN);
+        } else if (line.contains("Player disconnected")) {
+            SimpleDateFormat sdf = new SimpleDateFormat(notificationTimeFormat);
+            //プレイヤー名抜き出し
+            String name = line.split(" ")[logInOutIndex].replace(",", "");
+            playerList.remove(name);
+            new Webhook(webhookUrl, name + " LOG OUT " + sdf.format(new Date()), Color.RED);
         }
     }
 
     private void serverStatus(String line) {
-        if (line.contains("]: Done")) {
+        if (line.contains("]: Done") || line.endsWith("Server started.")) {
             SimpleDateFormat sdf = new SimpleDateFormat(notificationTimeFormat);
             new Webhook(webhookUrl, "SERVER START " + sdf.format(new Date()), Color.WHITE);
-        } else if (line.contains("]: Stopping the server")) {
+        } else if (line.contains("]: Stopping the server") || line.endsWith("Stopping server...")) {
             SimpleDateFormat sdf = new SimpleDateFormat(notificationTimeFormat);
             new Webhook(webhookUrl, "SERVER STOP " + sdf.format(new Date()), Color.BLACK);
         }
