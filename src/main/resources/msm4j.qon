@@ -1,7 +1,7 @@
 #Minecraft Edition [java,bedrock,cmd]
 edition=java
 #Home path
-home-directory=/home/user/Desktop/minecraft/java/java-server
+home-directory=/home/user/Desktop/minecraft/java/default
 #Enable relative paths for server path
 server-path-relative=true
 #Server path
@@ -54,10 +54,10 @@ jvm-args{
 #JVM argument
 before[
 -Xmx4G
--XX=+UnlockExperimentalVMOptions
--XX=+UseZGC
--XX=ZUncommitDelay=50
--XX=+AlwaysPreTouch
+-XX:+UnlockExperimentalVMOptions
+-XX:+UseZGC
+-XX:ZUncommitDelay=50
+-XX:+AlwaysPreTouch
 ]
 #Java program argument
 after[
@@ -69,7 +69,7 @@ notification{
 #Webhook url
 webhook-url=https//discord.com/api/webhooks/
 #Enable notifications when attempting to start up/quit
-server-wave=true
+server-wave=false
 #Enable notifications when startup/quit is successful
 server-status=true
 #Enable notification when log in/out
@@ -83,13 +83,13 @@ time-format=HH:mm:ss
 control{
 #Enable control
 controllable=true
-#Enable bind ip
+#Enable bind IP
 bind-ip=true
-#server ip
+#Server IP
 server-ip=localhost
-#client ip (Only when bind-ip=true)
+#Client IP (Only when bind-ip=true)
 client-ip=localhost
-#server port
+#Server port
 port=9999
 #Communication protocol
 byte-size=1024
