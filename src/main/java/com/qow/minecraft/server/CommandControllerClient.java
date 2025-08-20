@@ -1,8 +1,9 @@
 package com.qow.minecraft.server;
 
-import com.qow.util.JsonReader;
-import org.json.JSONObject;
+import com.qow.util.qon.QONObject;
+import com.qow.util.qon.UntrustedQONException;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -13,7 +14,7 @@ import java.util.Arrays;
 /**
  * {@link CommandControllerServer}への信号を送る
  *
- * @version 2025/07/29
+ * @version 2025/08/20
  * @since 1.0.0
  */
 public class CommandControllerClient {
@@ -22,16 +23,18 @@ public class CommandControllerClient {
     private final int byteSize;
 
     /**
-     * {@code jsonPath}によって指定されたconfigファイルに従って{@link CommandControllerServer}のIPアドレス､ポート番号､バイトサイズを指定し初期化する
+     * {@code qonFile}によって指定されたconfigファイルに従って{@link CommandControllerServer}のIPアドレス､ポート番号､バイトサイズを指定し初期化する
      *
-     * @param jsonPath jsonで記述されたconfigファイルへのパス
+     * @param qonFile qonで記述されたconfigファイルへのパス
+     * @throws UntrustedQONException qonファイルに不備がある場合
+     * @throws IOException           qonファイルに問題が生じた場合
      */
-    public CommandControllerClient(String jsonPath) {
-        JsonReader jsonReader = new JsonReader(jsonPath);
-        JSONObject controlJs = jsonReader.getJSONObject("control");
-        ip = controlJs.getString("server-ip");
-        port = controlJs.getInt("port");
-        byteSize = controlJs.getInt("byte-size");
+    public CommandControllerClient(File qonFile) throws UntrustedQONException, IOException {
+        QONObject qonObject = new QONObject(qonFile);
+        QONObject controlJs = qonObject.getQONObject("control");
+        ip = controlJs.get("server-ip");
+        port = Integer.parseInt(controlJs.get("port"));
+        byteSize = Integer.parseInt(controlJs.get("byte-size"));
     }
 
     /**

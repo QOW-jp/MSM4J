@@ -1,8 +1,9 @@
 package com.qow.minecraft.server;
 
-import com.qow.util.JsonReader;
-import org.json.JSONObject;
+import com.qow.util.qon.QONObject;
+import com.qow.util.qon.UntrustedQONException;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -15,7 +16,7 @@ import java.util.Arrays;
 /**
  * {@link CommandControllerClient}から受信した文字列を{@link CommandRule}を通して{@link ProcessManager}に送信､または特定のメソッドを呼び出す
  *
- * @version 2025/07/14
+ * @version 2025/08/20
  * @since 1.0.0
  */
 public class CommandControllerServer implements Runnable {
@@ -24,22 +25,22 @@ public class CommandControllerServer implements Runnable {
     private final int byteSize;
     private final boolean controllable;
     private CommandRule commandRule;
-    private boolean run;    //Thread実行中かどうか
+    private boolean run;
 
-    protected CommandControllerServer(String path) throws IOException {
+    protected CommandControllerServer(File qonFile) throws IOException, UntrustedQONException {
         run = false;
 
-        JsonReader jsonReader = new JsonReader(path);
-        JSONObject controlJs = jsonReader.getJSONObject("control");
+        QONObject qonObject = new QONObject(qonFile);
+        QONObject controlJs = qonObject.getQONObject("control");
 
-        controllable = controlJs.getBoolean("controllable");
+        controllable = Boolean.parseBoolean(controlJs.get("controllable"));
 
-        byteSize = controlJs.getInt("byte-size");
-        boolean bind = controlJs.getBoolean("bind-ip");
-        int port = controlJs.getInt("port");
+        byteSize = Integer.parseInt(controlJs.get("byte-size"));
+        boolean bind = Boolean.parseBoolean(controlJs.get("bind-ip"));
+        int port = Integer.parseInt(controlJs.get("port"));
 
         if (bind) {
-            String clientIp = controlJs.getString("client-ip");
+            String clientIp = controlJs.get("client-ip");
             serverSocket = new ServerSocket(port, 50, InetAddress.getByName(clientIp));
         } else {
             serverSocket = new ServerSocket(port);

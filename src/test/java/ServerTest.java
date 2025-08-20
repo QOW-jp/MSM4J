@@ -2,11 +2,13 @@ import com.qow.minecraft.server.CommandControllerServer;
 import com.qow.minecraft.server.CommandRule;
 import com.qow.minecraft.server.MinecraftEditionException;
 import com.qow.minecraft.server.MinecraftServerManager4J;
+import com.qow.util.qon.UntrustedQONException;
 
+import java.io.File;
 import java.io.IOException;
 
 public class ServerTest {
-    public static void main(String[] args) throws InterruptedException, IOException, MinecraftEditionException {
+    public static void main(String[] args) throws InterruptedException, IOException, MinecraftEditionException, UntrustedQONException {
         if (args.length != 1) {
             System.err.println("args.length is not 1");
             System.exit(2);
@@ -14,7 +16,7 @@ public class ServerTest {
         String path = args[0];
 
         CommandRule commandRule = new CommandRule();
-        MinecraftServerManager4J msManager = new MinecraftServerManager4J(path, commandRule);
+        MinecraftServerManager4J msManager = new MinecraftServerManager4J(new File(path), commandRule);
         Runtime.getRuntime().addShutdownHook(new Thread(msManager::killProcess));
 
         CommandControllerServer ccs = msManager.getCommandControllerServer();

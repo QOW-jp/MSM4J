@@ -11,12 +11,32 @@ Java 21 or later
 | OS      | Ubuntu 22.04 LTS |
 | Edition | Java             |
 
-```
-1. java ServerTest [jsonPath]
-2. java ClientTest [jsonPath]
+#### pom.xml
 
-※[jsonPath] = msm4jconfig.json
-args[0] = jsonPath
+```xml
+
+<dependencies>
+    <dependency>
+        <groupId>com.qow</groupId>
+        <artifactId>qon4j</artifactId>
+        <version>1.0.1</version>
+    </dependency>
+    <dependency>
+        <groupId>net.lingala.zip4j</groupId>
+        <artifactId>zip4j</artifactId>
+        <version>2.11.5</version>
+    </dependency>
+</dependencies>
+```
+
+#### cmd
+
+```
+1. java ServerTest [qonPath]
+2. java ClientTest [qonPath]
+
+※[jsonPath] = msm4jconfig.qon
+args[0] = qonPath
 ```
 
 #### ServerTest.java
@@ -26,11 +46,13 @@ import com.qow.minecraft.server.CommandControllerServer;
 import com.qow.minecraft.server.CommandRule;
 import com.qow.minecraft.server.MinecraftEditionException;
 import com.qow.minecraft.server.MinecraftServerManager4J;
+import com.qow.util.qon.UntrustedQONException;
 
+import java.io.File;
 import java.io.IOException;
 
 public class ServerTest {
-    public static void main(String[] args) throws InterruptedException, IOException, MinecraftEditionException {
+    public static void main(String[] args) throws InterruptedException, IOException, MinecraftEditionException, UntrustedQONException {
         if (args.length != 1) {
             System.err.println("args.length is not 1");
             System.exit(2);
@@ -38,7 +60,7 @@ public class ServerTest {
         String path = args[0];
 
         CommandRule commandRule = new CommandRule();
-        MinecraftServerManager4J msManager = new MinecraftServerManager4J(path, commandRule);
+        MinecraftServerManager4J msManager = new MinecraftServerManager4J(new File(path), commandRule);
         Runtime.getRuntime().addShutdownHook(new Thread(msManager::killProcess));
 
         CommandControllerServer ccs = msManager.getCommandControllerServer();
@@ -57,19 +79,21 @@ public class ServerTest {
 
 ```java
 import com.qow.minecraft.server.CommandControllerClient;
+import com.qow.util.qon.UntrustedQONException;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Scanner;
 
 public class ClientTest {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, UntrustedQONException {
         if (args.length != 1) {
             System.err.println("args.length is not 1");
             System.exit(2);
         }
 
         String path = args[0];
-        CommandControllerClient ccc = new CommandControllerClient(path);
+        CommandControllerClient ccc = new CommandControllerClient(new File(path));
 
         Scanner sc = new Scanner(System.in);
 
@@ -89,65 +113,103 @@ public class ClientTest {
 }
 ```
 
-#### msm4jconfig.json
+#### msm4jconfig.qon
 
-```json
-{
-  "edition": "java",
-  "home-directory": "/home/user/Desktop/minecraft/java/java-server",
-  "server-path-relative": true,
-  "server-path": "/server.jar",
-  "log": {
-    "loggable": true,
-    "title": "log",
-    "extension": ".log",
-    "time-format": "yyyy年MM月dd日HH時mm分ss秒",
-    "log-directory-relative": true,
-    "log-directory": "/run_log"
-  },
-  "backup": {
-    "backupable": true,
-    "delay": 10,
-    "comment": "This server will stop for backup after %d seconds.",
-    "title": "MC_SERVER_BK",
-    "extension": ".zip",
-    "time-format": "yyyy年MM月dd日HH時mm分ss秒",
-    "backup-directory-relative": true,
-    "backup-directory": "/server-backups",
-    "backup-files-path-relative": true,
-    "backup-files-path": [
-      "/world",
-      "/server.properties",
-      "/whitelist.json",
-      "/usercache.json"
-    ]
-  },
-  "jvm-args": {
-    "before": [
-      "-Xmx4G",
-      "-XX:+UnlockExperimentalVMOptions",
-      "-XX:+UseZGC",
-      "-XX:ZUncommitDelay=50",
-      "-XX:+AlwaysPreTouch"
-    ],
-    "after": [
-      "nogui"
-    ]
-  },
-  "notification": {
-    "webhook-url": "https://discord.com/api/webhooks/",
-    "server-wave": true,
-    "server-status": true,
-    "log-in-out": true,
-    "time-format": "HH:mm:ss"
-  },
-  "control": {
-    "controllable": true,
-    "bind-ip": true,
-    "server-ip": "localhost",
-    "client-ip": "localhost",
-    "port": 9999,
-    "byte-size": 1024
-  }
+```qon
+#Minecraft Edition [java,bedrock,cmd]
+edition=java
+#Home path
+home-directory=/home/user/Desktop/minecraft/java/java-server
+#Enable relative paths for server path
+server-path-relative=true
+#Server path
+server-path=/server.jar
+#Log config
+log{
+#Enable log
+loggable=true
+#log title
+title=log
+#Extension
+extension=.log
+#Time formats that conform to DateTimeFormatter
+time-format=yyyy年MM月dd日HH時mm分ss秒
+#Enable relative paths for log directory
+log-directory-relative=true
+#Log directory
+log-directory=/run_log
+}
+#Backup config
+backup{
+#Enable backup
+backupable=true
+#stop server delay
+delay=10
+#Notification comment
+comment=This server will stop for backup after %d seconds.
+#Backup file title
+title=MC_SERVER_BK
+#Extension
+extension=.zip
+#Time formats that conform to DateTimeFormatter
+time-format=yyyy年MM月dd日HH時mm分ss秒
+#Enable relative paths for backup directory
+backup-directory-relative=true
+#Backup directory
+backup-directory=/server-backups
+#Enable relative paths for backup target files path
+backup-files-path-relative=true
+#Backup target files path
+backup-files-path[
+/world
+/server.properties
+/whitelist.json
+/usercache.json
+]
+}
+#JVM config
+jvm-args{
+#JVM argument
+before[
+-Xmx4G
+-XX=+UnlockExperimentalVMOptions
+-XX=+UseZGC
+-XX=ZUncommitDelay=50
+-XX=+AlwaysPreTouch
+]
+#Java program argument
+after[
+nogui
+]
+}
+#Notification config
+notification{
+#Webhook url
+webhook-url=https//discord.com/api/webhooks/
+#Enable notifications when attempting to start up/quit
+server-wave=true
+#Enable notifications when startup/quit is successful
+server-status=true
+#Enable notification when log in/out
+log-in-out=true
+#player name index
+log-in-out-index=3
+#Time formats that conform to DateTimeFormatter
+time-format=HH:mm:ss
+}
+#Control config
+control{
+#Enable control
+controllable=true
+#Enable bind ip
+bind-ip=true
+#server ip
+server-ip=localhost
+#client ip (Only when bind-ip=true)
+client-ip=localhost
+#server port
+port=9999
+#Communication protocol
+byte-size=1024
 }
 ```

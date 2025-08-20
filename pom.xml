@@ -18,9 +18,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.json</groupId>
-            <artifactId>json</artifactId>
-            <version>20250517</version>
+            <groupId>com.qow</groupId>
+            <artifactId>qon4j</artifactId>
+            <version>1.0.1</version>
         </dependency>
         <dependency>
             <groupId>net.lingala.zip4j</groupId>
@@ -39,7 +39,7 @@
                     <finalName>test</finalName>
                     <descriptorRefs>
                         <descriptorRef>jar-with-dependencies</descriptorRef>
-                        <descriptorRef>json</descriptorRef>
+                        <descriptorRef>qon</descriptorRef>
                         <descriptorRef>zip4j</descriptorRef>
                     </descriptorRefs>
                 </configuration>

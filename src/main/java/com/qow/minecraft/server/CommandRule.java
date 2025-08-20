@@ -1,7 +1,7 @@
 package com.qow.minecraft.server;
 
 import com.qow.util.Webhook;
-import org.json.JSONObject;
+import com.qow.util.qon.QONObject;
 
 import java.awt.*;
 import java.io.BufferedWriter;
@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * Minecraftのコマンドラインへ送るコマンドを制御する
  *
- * @version 2025/08/16
+ * @version 2025/08/20
  * @since 1.0.0
  */
 public class CommandRule {
@@ -113,12 +113,12 @@ public class CommandRule {
         this.bufferedWriter = bw;
     }
 
-    protected void setWebhook(JSONObject json) {
-        webhookUrl = json.getString("webhook-url");
-        serverStatusNotification = json.getBoolean("server-status");
-        logInOutNotification = json.getBoolean("log-in-out");
-        if (logInOutNotification) logInOutIndex = json.getInt("log-in-out-index");
-        notificationTimeFormat = json.getString("time-format");
+    protected void setWebhook(QONObject qon) {
+        webhookUrl = qon.get("webhook-url");
+        serverStatusNotification = Boolean.parseBoolean(qon.get("server-status"));
+        logInOutNotification = Boolean.parseBoolean(qon.get("log-in-out"));
+        if (logInOutNotification) logInOutIndex = Integer.parseInt(qon.get("log-in-out-index"));
+        notificationTimeFormat = qon.get("time-format");
     }
 
     protected void commandsLine(String line) throws IOException, InterruptedException {
