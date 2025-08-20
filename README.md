@@ -2,7 +2,7 @@
 
 ### Requirements
 
-Java 21 or later
+Java 17 or later
 
 ## Getting started
 
