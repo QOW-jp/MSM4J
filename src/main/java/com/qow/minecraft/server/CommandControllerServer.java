@@ -1,9 +1,8 @@
 package com.qow.minecraft.server;
 
-import com.qow.util.qon.QONObject;
+import com.qow.qtcp.TCPServer;
 import com.qow.util.qon.UntrustedQONException;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -19,35 +18,36 @@ import java.util.Arrays;
  * @version 2025/08/20
  * @since 1.0.0
  */
-public class CommandControllerServer implements Runnable {
+public class CommandControllerServer extends TCPServer implements Runnable {
+    public final static byte[] PROTOCOL_ID = "msm4j-s1.2.0".getBytes();
     private final Thread thread;
     private final ServerSocket serverSocket;
-    private final int byteSize;
-    private final boolean controllable;
     private CommandRule commandRule;
     private boolean run;
+    private boolean enable;
 
-    protected CommandControllerServer(File qonFile) throws IOException, UntrustedQONException {
+    protected CommandControllerServer(int port, int byteSize, String clientIP) throws IOException, UntrustedQONException {
+        super(port, PROTOCOL_ID, byteSize);
+
+        serverSocket = new ServerSocket(port, 50, InetAddress.getByName(clientIP));
+
         run = false;
-
-        QONObject qonObject = new QONObject(qonFile);
-        QONObject controlJs = qonObject.getQONObject("control");
-
-        controllable = Boolean.parseBoolean(controlJs.get("controllable"));
-
-        byteSize = Integer.parseInt(controlJs.get("byte-size"));
-        boolean bind = Boolean.parseBoolean(controlJs.get("bind-ip"));
-        int port = Integer.parseInt(controlJs.get("port"));
-
-        if (bind) {
-            String clientIp = controlJs.get("client-ip");
-            serverSocket = new ServerSocket(port, 50, InetAddress.getByName(clientIp));
-        } else {
-            serverSocket = new ServerSocket(port);
-        }
-
+        enable = false;
         thread = new Thread(this);
     }
+
+    protected CommandControllerServer(int port, int byteSize) throws IOException, UntrustedQONException {
+        super(port, PROTOCOL_ID, byteSize);
+
+        serverSocket = new ServerSocket(port);
+
+        run = false;
+        thread = new Thread(this);
+    }
+    public void setEnable(boolean enable){
+        this.enable = enable;
+    }
+
 
     /**
      * サーバーを開くためのリクエストをする
@@ -55,7 +55,7 @@ public class CommandControllerServer implements Runnable {
      * @return 既にサーバーが開いていたり実行可能ではない場合にfalseが返される
      */
     public synchronized boolean start() {
-        if (!controllable) return false;
+        if (!enable) return false;
         if (run) return false;
         if (commandRule == null) return false;
         if (thread == null) return false;
@@ -114,5 +114,19 @@ public class CommandControllerServer implements Runnable {
             }
         }
         run = false;
+    }
+
+    @Override
+    public byte[] read(byte[] data){
+        String line = new String(data, StandardCharsets.UTF_8);
+        try {
+            commandRule.command(line);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        if (line.equals("STOP")) {
+            run = false;
+        }
+        return line.getBytes(StandardCharsets.UTF_8);
     }
 }
