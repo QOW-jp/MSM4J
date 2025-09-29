@@ -10,11 +10,11 @@ import java.nio.charset.StandardCharsets;
 /**
  * {@link CommandControllerClient}から受信した文字列を{@link CommandRule}を通して{@link ProcessManager}に送信､または特定のメソッドを呼び出す
  *
- * @version 2025/08/20
+ * @version 2025/09/29
  * @since 1.0.0
  */
 public class CommandControllerServer extends TCPServer implements Runnable {
-    public final static byte[] PROTOCOL_ID = "msm4j-s1.2.0".getBytes();
+    public final static byte[] PROTOCOL_ID = "msm4j-s1.2.0".getBytes(StandardCharsets.UTF_8);
     private Thread thread;
     private CommandRule commandRule;
     private boolean run;
@@ -81,6 +81,7 @@ public class CommandControllerServer extends TCPServer implements Runnable {
         while (run) {
             try {
                 listeningRequest();
+                err = 0;
             } catch (IOException | UntrustedConnectException e) {
                 if (1 < err++) e.printStackTrace();
             }

@@ -1,7 +1,4 @@
-import com.qow.minecraft.server.CommandControllerServer;
-import com.qow.minecraft.server.CommandRule;
-import com.qow.minecraft.server.MinecraftEditionException;
-import com.qow.minecraft.server.MinecraftServerManager4J;
+import com.qow.minecraft.server.*;
 import com.qow.util.qon.UntrustedQONException;
 
 import java.io.File;
@@ -19,13 +16,19 @@ public class ServerTest {
         MinecraftServerManager4J msManager = new MinecraftServerManager4J(new File(path), commandRule);
         Runtime.getRuntime().addShutdownHook(new Thread(msManager::killProcess));
 
-        CommandControllerServer ccs = msManager.getCommandControllerServer();
-
         System.out.println("start MSM4J : " + msManager.start());
-        System.out.println("start CommandControllerServer : " + ccs.start());
 
-        int exitCode = msManager.waitFor();
-        ccs.stop();
-        System.out.println("server exit code " + exitCode);
+        try {
+            CommandControllerServer ccs = msManager.getCommandControllerServer();
+
+            System.out.println("start CommandControllerServer : " + ccs.start());
+
+            int exitCode = msManager.waitFor();
+            ccs.stop();
+            System.out.println("server exit code " + exitCode);
+        } catch (DisabledException e) {
+            int exitCode = msManager.waitFor();
+            System.out.println("server exit code " + exitCode);
+        }
     }
 }

@@ -14,7 +14,7 @@ import java.io.IOException;
  * 手動でバックアップなどを取る場合は{@link ProcessManager}を使用する<br>
  * 基本的にqonファイル形式でconfigを管理しており、パスや通知の有無はqonファイルで設定する
  *
- * @version 2025/08/20
+ * @version 2025/09/29
  * @since 1.0.0
  */
 public class MinecraftServerManager4J {
@@ -35,11 +35,23 @@ public class MinecraftServerManager4J {
      * @throws MinecraftEditionException 非対応のエディションを選択した場合
      */
     public MinecraftServerManager4J(File qonFile, CommandRule commandRule) throws IOException, MinecraftEditionException, UntrustedQONException {
-        ccs = new CommandControllerServer(qonFile);
-        ccs.setCommandRule(commandRule);
-
         QONObject qonObject = new QONObject(qonFile);
         String HOME_PATH = qonObject.get("home-directory");
+
+        QONObject control = qonObject.getQONObject("control");
+        if(Boolean.parseBoolean(control.get("controllable"))) {
+            int port = Integer.parseInt(control.get("port"));
+            int byteSize = Integer.parseInt(control.get("byte-size"));
+            if(Boolean.parseBoolean(control.get("bind-ip"))) {
+                String clientIP = control.get("client-ip");
+                ccs = new CommandControllerServer(port,byteSize,clientIP);
+            }else {
+                ccs = new CommandControllerServer(port,byteSize);
+            }
+            ccs.setCommandRule(commandRule);
+        }else {
+            ccs = null;
+        }
 
         String serverPath = QonReader.getAbsolutePath(HOME_PATH, qonObject, "server-path");
         String edition = qonObject.get("edition");
@@ -136,7 +148,8 @@ public class MinecraftServerManager4J {
      *
      * @return 対応したコマンド受信サーバー
      */
-    public CommandControllerServer getCommandControllerServer() {
+    public CommandControllerServer getCommandControllerServer() throws DisabledException {
+        if(ccs == null) throw new DisabledException("config:controllable is false");
         return ccs;
     }
 }
