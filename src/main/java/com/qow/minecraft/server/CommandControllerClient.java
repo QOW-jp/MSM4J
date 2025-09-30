@@ -1,5 +1,6 @@
 package com.qow.minecraft.server;
 
+import com.qow.qtcp.ClosedServerException;
 import com.qow.qtcp.TCPClient;
 import com.qow.qtcp.UntrustedConnectException;
 
@@ -32,7 +33,7 @@ public class CommandControllerClient extends TCPClient {
      * @return 送信先からの返信が送信した文字列と同じだった場合trueを返す
      * @throws IOException 送受信に失敗した場合
      */
-    public boolean command(String line) throws IOException, UntrustedConnectException {
+    public boolean command(String line) throws UntrustedConnectException, ClosedServerException {
         //文字列をUTF-8形式のバイト配列に変換して送受信
         byte[] receiveData = request(line.getBytes(StandardCharsets.UTF_8));
         String receiveLine = new String(receiveData, StandardCharsets.UTF_8);

@@ -1,4 +1,5 @@
 import com.qow.minecraft.server.CommandControllerClient;
+import com.qow.qtcp.ClosedServerException;
 import com.qow.qtcp.UntrustedConnectException;
 import com.qow.util.qon.QONObject;
 import com.qow.util.qon.UntrustedQONException;
@@ -8,7 +9,7 @@ import java.io.IOException;
 import java.util.Scanner;
 
 public class ClientTest {
-    public static void main(String[] args) throws IOException, UntrustedQONException, UntrustedConnectException {
+    public static void main(String[] args) throws IOException, UntrustedQONException, UntrustedConnectException, ClosedServerException {
         if (args.length != 1) {
             System.err.println("args.length is not 1");
             System.exit(2);
