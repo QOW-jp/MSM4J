@@ -1,11 +1,11 @@
+#qon file 4 msm4j config
+#Requirements qon4j v1.1.0
 #Minecraft Edition [java,bedrock,cmd]
 edition=java
 #Home path
-home-directory=/home/user/Desktop/minecraft/java/default
-#Enable relative paths for server path
-server-path-relative=true
+home-dir=/home/user/Desktop/minecraft/java/default
 #Server path
-server-path=/server.jar
+server-path=$(home-dir)/server.jar
 #Log config
 log{
     #Enable log
@@ -16,10 +16,8 @@ log{
     extension=.log
     #Time formats that conform to DateTimeFormatter
     time-format=yyyy年MM月dd日HH時mm分ss秒
-    #Enable relative paths for log directory
-    log-directory-relative=true
     #Log directory
-    log-directory=/run_log
+    log-dir=$(home-dir)/run_log
 }
 #Backup config
 backup{
@@ -35,18 +33,14 @@ backup{
     extension=.zip
     #Time formats that conform to DateTimeFormatter
     time-format=yyyy年MM月dd日HH時mm分ss秒
-    #Enable relative paths for backup directory
-    backup-directory-relative=true
     #Backup directory
-    backup-directory=/server-backups
-    #Enable relative paths for backup target files path
-    backup-files-path-relative=true
+    backup-dir=$(home-dir)/server-backups
     #Backup target files path
     backup-files-path[
-        /world
-        /server.properties
-        /whitelist.json
-        /usercache.json
+        $(home-dir)/world
+        $(home-dir)/server.properties
+        $(home-dir)/whitelist.json
+        $(home-dir)/usercache.json
     ]
 }
 #JVM config

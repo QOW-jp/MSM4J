@@ -1,7 +1,6 @@
 package com.qow.minecraft.server;
 
 import com.qow.util.Logger;
-import com.qow.util.QonReader;
 import com.qow.util.ThreadStopper;
 import com.qow.util.Webhook;
 import com.qow.util.qon.QONObject;
@@ -19,7 +18,7 @@ import java.util.Date;
  * Minecraftを実行する{@link ProcessBuilder}を管理する<br>
  * 取得するには{@link CommandRule#getProcessManager()}を使用する
  *
- * @version 2025/08/20
+ * @version 2025/09/30
  * @since 1.0.0
  */
 public class ProcessManager {
@@ -61,7 +60,7 @@ public class ProcessManager {
                 QONObject logJs = qonObject.getQONObject("log");
                 loggable = Boolean.parseBoolean(logJs.get("loggable"));
                 if (loggable) {
-                    String logPath = QonReader.getAbsolutePath(HOME_PATH, logJs, "log-directory");
+                    String logPath = logJs.get("log-dir");
 
                     log = new Logger(logPath);
                     SimpleDateFormat sdf = new SimpleDateFormat(logJs.get("time-format"));
@@ -100,10 +99,6 @@ public class ProcessManager {
                 br.close();
             } catch (IOException | InterruptedException e) {
                 throw new RuntimeException(e);
-            } finally {
-                if (Boolean.parseBoolean(notificationJs.get("server-wave"))) {
-                    new Webhook(notificationJs.get("webhook-url"), "CLOSE", Color.GRAY);
-                }
             }
         }).start();
         return true;
@@ -145,7 +140,7 @@ public class ProcessManager {
             return;
         }
 
-        String backupPath = QonReader.getAbsolutePath(HOME_PATH, backup, "backup-directory");
+        String backupPath = backup.get("backup-dir");
 
         boolean wasEnableServer = getServerStatus();
         if (wasEnableServer) {
@@ -153,7 +148,7 @@ public class ProcessManager {
             process.waitFor();
         }
 
-        String[] backupFilePaths = QonReader.getAbsolutePaths(HOME_PATH, backup, "backup-files-path");
+        String[] backupFilePaths = backup.getQONArray("backup-files-path").list();
         SimpleDateFormat sdf = new SimpleDateFormat(backup.get("time-format"));
         String archivedFileName = backupPath + "/" + backup.get("title") + "_" + sdf.format(new Date()) + backup.get("extension");
 

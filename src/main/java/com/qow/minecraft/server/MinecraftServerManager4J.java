@@ -1,6 +1,5 @@
 package com.qow.minecraft.server;
 
-import com.qow.util.QonReader;
 import com.qow.util.qon.QONArray;
 import com.qow.util.qon.QONObject;
 import com.qow.util.qon.UntrustedQONException;
@@ -14,7 +13,7 @@ import java.io.IOException;
  * 手動でバックアップなどを取る場合は{@link ProcessManager}を使用する<br>
  * 基本的にqonファイル形式でconfigを管理しており、パスや通知の有無はqonファイルで設定する
  *
- * @version 2025/09/29
+ * @version 2025/09/30
  * @since 1.0.0
  */
 public class MinecraftServerManager4J {
@@ -36,24 +35,23 @@ public class MinecraftServerManager4J {
      */
     public MinecraftServerManager4J(File qonFile, CommandRule commandRule) throws IOException, MinecraftEditionException, UntrustedQONException {
         QONObject qonObject = new QONObject(qonFile);
-        String HOME_PATH = qonObject.get("home-directory");
 
         QONObject control = qonObject.getQONObject("control");
-        if(Boolean.parseBoolean(control.get("controllable"))) {
+        if (Boolean.parseBoolean(control.get("controllable"))) {
             int port = Integer.parseInt(control.get("port"));
             int byteSize = Integer.parseInt(control.get("byte-size"));
-            if(Boolean.parseBoolean(control.get("bind-ip"))) {
+            if (Boolean.parseBoolean(control.get("bind-ip"))) {
                 String clientIP = control.get("client-ip");
-                ccs = new CommandControllerServer(port,byteSize,clientIP);
-            }else {
-                ccs = new CommandControllerServer(port,byteSize);
+                ccs = new CommandControllerServer(port, byteSize, clientIP);
+            } else {
+                ccs = new CommandControllerServer(port, byteSize);
             }
             ccs.setCommandRule(commandRule);
-        }else {
+        } else {
             ccs = null;
         }
 
-        String serverPath = QonReader.getAbsolutePath(HOME_PATH, qonObject, "server-path");
+        String serverPath = qonObject.get("server-path");
         String edition = qonObject.get("edition");
 
         this.commandRule = commandRule;
@@ -97,7 +95,7 @@ public class MinecraftServerManager4J {
      *
      * @return 起動に成功した場合true
      */
-    public boolean start() throws IOException {
+    public boolean start() {
         return processManager.start();
     }
 
@@ -149,7 +147,7 @@ public class MinecraftServerManager4J {
      * @return 対応したコマンド受信サーバー
      */
     public CommandControllerServer getCommandControllerServer() throws DisabledException {
-        if(ccs == null) throw new DisabledException("config:controllable is false");
+        if (ccs == null) throw new DisabledException("config:controllable is false");
         return ccs;
     }
 }
