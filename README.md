@@ -14,12 +14,16 @@ Java 17 or later
 #### pom.xml
 
 ```xml
-
 <dependencies>
     <dependency>
         <groupId>com.qow</groupId>
         <artifactId>qon4j</artifactId>
-        <version>1.0.1</version>
+        <version>1.1.0</version>
+    </dependency>
+    <dependency>
+        <groupId>com.qow</groupId>
+        <artifactId>qtcp</artifactId>
+        <version>1.1.1</version>
     </dependency>
     <dependency>
         <groupId>net.lingala.zip4j</groupId>
