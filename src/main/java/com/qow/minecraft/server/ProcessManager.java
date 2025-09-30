@@ -24,7 +24,6 @@ import java.util.Date;
 public class ProcessManager {
     private final ProcessBuilder pb;
     private final QONObject qonObject;
-    private final String HOME_PATH;
     private final ThreadStopper stopper;
     private Process process;
     private CommandRule cr;
@@ -35,11 +34,11 @@ public class ProcessManager {
 
     protected ProcessManager(QONObject qonObject, String[] exe) {
         this.qonObject = qonObject;
-        this.HOME_PATH = qonObject.get("home-directory");
         process = null;
         cr = null;
         stopper = new ThreadStopper();
 
+        String HOME_PATH = qonObject.get("home-dir");
         pb = new ProcessBuilder(exe);
         pb.directory(new File(HOME_PATH));
         pb.redirectErrorStream(true);
@@ -158,8 +157,8 @@ public class ProcessManager {
 
         //Zipファイルを作成
         try (ZipFile zipFile = new ZipFile(archivedFileName)) {
-            for (int i = 0; i < backupFilePaths.length; i++) {
-                File targetFile = new File(backupFilePaths[i]);
+            for (String backupFilePath : backupFilePaths) {
+                File targetFile = new File(backupFilePath);
                 if (targetFile.isDirectory()) {
                     zipFile.addFolder(targetFile);
                 } else {
