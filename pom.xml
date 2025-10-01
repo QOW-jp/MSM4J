@@ -6,7 +6,7 @@
 
     <groupId>com.qow</groupId>
     <artifactId>msm4j</artifactId>
-    <version>1.3.4</version>
+    <version>1.3.5</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -43,9 +43,6 @@
                     <finalName>test</finalName>
                     <descriptorRefs>
                         <descriptorRef>jar-with-dependencies</descriptorRef>
-                        <descriptorRef>qon</descriptorRef>
-                        <descriptorRef>qtcp</descriptorRef>
-                        <descriptorRef>zip4j</descriptorRef>
                     </descriptorRefs>
                 </configuration>
                 <executions>
