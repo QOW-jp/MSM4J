@@ -83,7 +83,7 @@ public class CommandControllerServer extends TCPServer implements Runnable {
                 listeningRequest();
                 err = 0;
             } catch (IOException | UntrustedConnectException e) {
-                if (1 < err++) e.printStackTrace();
+                if (1 < err++) System.err.println(e.getMessage());
             }
         }
     }
