@@ -18,7 +18,6 @@ public class CommandControllerServer extends TCPServer implements Runnable {
     private Thread thread;
     private CommandRule commandRule;
     private boolean run;
-    private boolean enable;
 
     protected CommandControllerServer(int port, int byteSize, String clientIP) throws IOException, UntrustedQONException {
         super(port, PROTOCOL_ID, clientIP);
@@ -36,12 +35,7 @@ public class CommandControllerServer extends TCPServer implements Runnable {
 
     private void init() {
         run = false;
-        enable = false;
         thread = new Thread(this);
-    }
-
-    public void setEnable(boolean enable) {
-        this.enable = enable;
     }
 
 
@@ -51,7 +45,6 @@ public class CommandControllerServer extends TCPServer implements Runnable {
      * @return 既にサーバーが開いていたり実行可能ではない場合にfalseが返される
      */
     public synchronized boolean start() {
-        if (!enable) return false;
         if (run) return false;
         if (commandRule == null) return false;
         if (thread == null) return false;
