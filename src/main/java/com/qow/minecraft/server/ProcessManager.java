@@ -3,6 +3,7 @@ package com.qow.minecraft.server;
 import com.qow.util.Logger;
 import com.qow.util.ThreadStopper;
 import com.qow.util.Webhook;
+import com.qow.util.qon.NoSuchKeyException;
 import com.qow.util.qon.QONObject;
 import net.lingala.zip4j.ZipFile;
 
@@ -18,7 +19,7 @@ import java.util.Date;
  * Minecraftを実行する{@link ProcessBuilder}を管理する<br>
  * 取得するには{@link CommandRule#getProcessManager()}を使用する
  *
- * @version 2025/09/30
+ * @version 2025/10/08
  * @since 1.0.0
  */
 public class ProcessManager {
@@ -32,7 +33,7 @@ public class ProcessManager {
     private boolean loggable;
     private boolean restart;
 
-    protected ProcessManager(QONObject qonObject, String[] exe) {
+    protected ProcessManager(QONObject qonObject, String[] exe) throws NoSuchKeyException {
         this.qonObject = qonObject;
         process = null;
         cr = null;
@@ -54,7 +55,12 @@ public class ProcessManager {
         startProcess = true;
         new Thread(() -> {
             stopper.setReady(false);
-            QONObject notificationJs = qonObject.getQONObject("notification");
+            QONObject notificationJs;
+            try {
+                notificationJs = qonObject.getQONObject("notification");
+            } catch (NoSuchKeyException e) {
+                throw new RuntimeException(e);
+            }
             try {
                 QONObject logJs = qonObject.getQONObject("log");
                 loggable = Boolean.parseBoolean(logJs.get("loggable"));
@@ -96,7 +102,7 @@ public class ProcessManager {
                 if (loggable) log.close();
                 is.close();
                 br.close();
-            } catch (IOException | InterruptedException e) {
+            } catch (IOException | InterruptedException | NoSuchKeyException e) {
                 throw new RuntimeException(e);
             }
         }).start();
@@ -131,7 +137,7 @@ public class ProcessManager {
      * @throws IOException          Minecraftの起動に失敗していた場合
      * @throws InterruptedException 予期せぬ割り込みが発生した場合
      */
-    public synchronized void backup(boolean delay, boolean restart) throws IOException, InterruptedException {
+    public synchronized void backup(boolean delay, boolean restart) throws IOException, InterruptedException, NoSuchKeyException {
         QONObject backup = qonObject.getQONObject("backup");
 
         if (!Boolean.parseBoolean(backup.get("backupable"))) {

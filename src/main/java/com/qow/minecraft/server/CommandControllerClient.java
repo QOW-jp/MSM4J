@@ -9,18 +9,20 @@ import java.nio.charset.StandardCharsets;
 /**
  * {@link CommandControllerServer}への信号を送る
  *
- * @version 2025/09/29
+ * @version 2025/10/08
  * @since 1.0.0
  */
 public class CommandControllerClient extends TCPClient {
     /**
      * {@link CommandControllerServer}のホスト名､ポート番号､バイトサイズを指定し初期化する
      *
-     * @param hostname ホスト名
-     * @param port     ポート番号
+     * @param host       ホスト名
+     * @param port       ポート番号
+     * @param protocolID 識別子
+     * @param byteSize   バイトサイズ
      */
-    public CommandControllerClient(String hostname, int port, int byteSize) {
-        super(hostname, port, CommandControllerServer.PROTOCOL_ID);
+    public CommandControllerClient(String host, int port, byte[] protocolID, int byteSize) {
+        super(host, port, protocolID);
         setByteSize(byteSize);
     }
 

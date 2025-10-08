@@ -1,5 +1,5 @@
 #qon file 4 msm4j config
-#Requirements qon4j v1.1.0
+#Requirements qon4j v1.1.0 or later
 #Minecraft Edition [java,bedrock,cmd]
 edition=java
 #Home path
@@ -87,4 +87,6 @@ control{
     port=9999
     #Communication protocol
     byte-size=1024
+    #Protocol ID
+    protocol-id=MSM4J
 }

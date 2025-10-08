@@ -2,7 +2,6 @@ package com.qow.minecraft.server;
 
 import com.qow.qtcp.TCPServer;
 import com.qow.qtcp.UntrustedConnectException;
-import com.qow.util.qon.UntrustedQONException;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -10,24 +9,23 @@ import java.nio.charset.StandardCharsets;
 /**
  * {@link CommandControllerClient}から受信した文字列を{@link CommandRule}を通して{@link ProcessManager}に送信､または特定のメソッドを呼び出す
  *
- * @version 2025/09/29
+ * @version 2025/10/08
  * @since 1.0.0
  */
 public class CommandControllerServer extends TCPServer implements Runnable {
-    public final static byte[] PROTOCOL_ID = "msm4j-s1.2.0".getBytes(StandardCharsets.UTF_8);
     private Thread thread;
     private CommandRule commandRule;
     private boolean run;
 
-    protected CommandControllerServer(int port, int byteSize, String clientIP) throws IOException, UntrustedQONException {
-        super(port, PROTOCOL_ID, clientIP);
+    protected CommandControllerServer(int port, byte[] protocolID, int byteSize, String clientIP) throws IOException {
+        super(port, protocolID, clientIP);
 
         setByteSize(byteSize);
         init();
     }
 
-    protected CommandControllerServer(int port, int byteSize) throws IOException, UntrustedQONException {
-        super(port, PROTOCOL_ID);
+    protected CommandControllerServer(int port, byte[] protocolID, int byteSize) throws IOException {
+        super(port, protocolID);
 
         setByteSize(byteSize);
         init();

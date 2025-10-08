@@ -1,6 +1,7 @@
 package com.qow.minecraft.server;
 
 import com.qow.util.Webhook;
+import com.qow.util.qon.NoSuchKeyException;
 import com.qow.util.qon.QONObject;
 
 import java.awt.*;
@@ -14,7 +15,7 @@ import java.util.List;
 /**
  * Minecraftのコマンドラインへ送るコマンドを制御する
  *
- * @version 2025/08/20
+ * @version 2025/10/08
  * @since 1.0.0
  */
 public class CommandRule {
@@ -45,7 +46,7 @@ public class CommandRule {
             case "BACKUP" -> {
                 try {
                     processManager.backup(true, true);
-                } catch (InterruptedException e) {
+                } catch (InterruptedException | NoSuchKeyException e) {
                     System.out.println(e.getMessage());
                 }
             }
@@ -113,7 +114,7 @@ public class CommandRule {
         this.bufferedWriter = bw;
     }
 
-    protected void setWebhook(QONObject qon) {
+    protected void setWebhook(QONObject qon) throws NoSuchKeyException {
         webhookUrl = qon.get("webhook-url");
         serverStatusNotification = Boolean.parseBoolean(qon.get("server-status"));
         logInOutNotification = Boolean.parseBoolean(qon.get("log-in-out"));

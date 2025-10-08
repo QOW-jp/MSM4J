@@ -1,11 +1,13 @@
 package com.qow.minecraft.server;
 
+import com.qow.util.qon.NoSuchKeyException;
 import com.qow.util.qon.QONArray;
 import com.qow.util.qon.QONObject;
 import com.qow.util.qon.UntrustedQONException;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Minecraftサーバーを管理する<br>
@@ -13,7 +15,7 @@ import java.io.IOException;
  * 手動でバックアップなどを取る場合は{@link ProcessManager}を使用する<br>
  * 基本的にqonファイル形式でconfigを管理しており、パスや通知の有無はqonファイルで設定する
  *
- * @version 2025/09/30
+ * @version 2025/10/08
  * @since 1.0.0
  */
 public class MinecraftServerManager4J {
@@ -33,18 +35,19 @@ public class MinecraftServerManager4J {
      * @throws IOException               ファイルが存在しないまたはアクセス権がない場合
      * @throws MinecraftEditionException 非対応のエディションを選択した場合
      */
-    public MinecraftServerManager4J(File qonFile, CommandRule commandRule) throws IOException, MinecraftEditionException, UntrustedQONException {
+    public MinecraftServerManager4J(File qonFile, CommandRule commandRule) throws IOException, MinecraftEditionException, UntrustedQONException, NoSuchKeyException {
         QONObject qonObject = new QONObject(qonFile);
 
         QONObject control = qonObject.getQONObject("control");
         if (Boolean.parseBoolean(control.get("controllable"))) {
             int port = Integer.parseInt(control.get("port"));
             int byteSize = Integer.parseInt(control.get("byte-size"));
+            byte[] protocolID = control.get("protocol-id").getBytes(StandardCharsets.UTF_8);
             if (Boolean.parseBoolean(control.get("bind-ip"))) {
                 String clientIP = control.get("client-ip");
-                ccs = new CommandControllerServer(port, byteSize, clientIP);
+                ccs = new CommandControllerServer(port, protocolID, byteSize, clientIP);
             } else {
-                ccs = new CommandControllerServer(port, byteSize);
+                ccs = new CommandControllerServer(port, protocolID, byteSize);
             }
             ccs.setCommandRule(commandRule);
         } else {
