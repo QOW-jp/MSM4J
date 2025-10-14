@@ -1,11 +1,8 @@
 package com.qow.minecraft.server;
 
 import com.qow.util.qon.NoSuchKeyException;
-import com.qow.util.qon.QONArray;
-import com.qow.util.qon.QONObject;
 import com.qow.util.qon.UntrustedQONException;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
@@ -15,7 +12,7 @@ import java.nio.charset.StandardCharsets;
  * 手動でバックアップなどを取る場合は{@link ProcessManager}を使用する<br>
  * 基本的にqonファイル形式でconfigを管理しており、パスや通知の有無はqonファイルで設定する
  *
- * @version 2025/10/08
+ * @version 2025/10/14
  * @since 1.0.0
  */
 public class MinecraftServerManager4J {
@@ -27,24 +24,21 @@ public class MinecraftServerManager4J {
     private final CommandRule commandRule;
 
     /**
-     * configに従いパス、エディションを設定する<br>
+     * プロパティに従いパス、エディションを設定する<br>
      * {@link CommandControllerServer}を初期化する
      *
-     * @param qonFile     configファイルのパス
+     * @param property    プロパティ
      * @param commandRule 設定する{@link CommandRule}
      * @throws IOException               ファイルが存在しないまたはアクセス権がない場合
      * @throws MinecraftEditionException 非対応のエディションを選択した場合
      */
-    public MinecraftServerManager4J(File qonFile, CommandRule commandRule) throws IOException, MinecraftEditionException, UntrustedQONException, NoSuchKeyException {
-        QONObject qonObject = new QONObject(qonFile);
-
-        QONObject control = qonObject.getQONObject("control");
-        if (Boolean.parseBoolean(control.get("controllable"))) {
-            int port = Integer.parseInt(control.get("port"));
-            int byteSize = Integer.parseInt(control.get("byte-size"));
-            byte[] protocolID = control.get("protocol-id").getBytes(StandardCharsets.UTF_8);
-            if (Boolean.parseBoolean(control.get("bind-ip"))) {
-                String clientIP = control.get("client-ip");
+    public MinecraftServerManager4J(MSM4JProperty property, CommandRule commandRule) throws IOException, MinecraftEditionException, UntrustedQONException, NoSuchKeyException {
+        if (Boolean.parseBoolean(property.get("control_enable"))) {
+            int port = Integer.parseInt(property.get("control_port"));
+            int byteSize = Integer.parseInt(property.get("control_byte-size"));
+            byte[] protocolID = property.get("control_protocol-id").getBytes(StandardCharsets.UTF_8);
+            if (Boolean.parseBoolean(property.get("control_bind-ip"))) {
+                String clientIP = property.get("control_client-ip");
                 ccs = new CommandControllerServer(port, protocolID, byteSize, clientIP);
             } else {
                 ccs = new CommandControllerServer(port, protocolID, byteSize);
@@ -54,39 +48,38 @@ public class MinecraftServerManager4J {
             ccs = null;
         }
 
-        String serverPath = qonObject.get("server-path");
-        String edition = qonObject.get("edition");
+        String serverPath = property.get("server-path");
+        String edition = property.get("edition");
 
         this.commandRule = commandRule;
-        commandRule.setWebhook(qonObject.getQONObject("notification"));
+        commandRule.setWebhook(property);
 
         switch (edition) {
             case "java" -> {
-                QONObject jvmArgs = qonObject.getQONObject("jvm-args");
-                QONArray beforeArgs = jvmArgs.getQONArray("before");
-                QONArray afterArgs = jvmArgs.getQONArray("after");
+                String beforeArg = property.get("jvm-args_before");
+                String[] beforeArgs = beforeArg.substring(1, beforeArg.length() - 1).split(",\\s*");
+                String afterArg = property.get("jvm-args_after");
+                String[] afterArgs = afterArg.substring(1, afterArg.length() - 1).split(",\\s*");
 
-                String[] exe = new String[beforeArgs.list().length + afterArgs.list().length + 2];
+                String[] exe = new String[beforeArgs.length + afterArgs.length + 2];
 
                 exe[0] = EXE_JE;
-                for (int i = 0; i < beforeArgs.list().length; i++) {
-                    exe[i + 1] = beforeArgs.get(i);
+                System.arraycopy(beforeArgs, 0, exe, 1, beforeArgs.length);
+                exe[beforeArgs.length] = "-jar";
+                exe[beforeArgs.length + 1] = serverPath;
+                for (int i = 0; i < afterArgs.length; i++) {
+                    exe[beforeArgs.length + i + 2] = afterArgs[i];
                 }
-                exe[beforeArgs.list().length] = "-jar";
-                exe[beforeArgs.list().length + 1] = serverPath;
-                for (int i = 0; i < afterArgs.list().length; i++) {
-                    exe[beforeArgs.list().length + i + 2] = afterArgs.get(i);
-                }
-                processManager = new ProcessManager(qonObject, exe);
+                processManager = new ProcessManager(property, exe);
                 processManager.connectCommandRule(commandRule);
             }
             case "bedrock" -> {
-                processManager = new ProcessManager(qonObject, new String[]{serverPath});
+                processManager = new ProcessManager(property, new String[]{serverPath});
                 processManager.environment(EXE_BE, ".");
                 processManager.connectCommandRule(commandRule);
             }
             case "cmd" -> {
-                processManager = new ProcessManager(qonObject, new String[]{serverPath});
+                processManager = new ProcessManager(property, new String[]{serverPath});
                 processManager.connectCommandRule(commandRule);
             }
             default -> throw new MinecraftEditionException("unsupported edition was picked.");

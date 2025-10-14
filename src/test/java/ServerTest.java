@@ -1,5 +1,6 @@
 import com.qow.minecraft.server.*;
 import com.qow.util.qon.NoSuchKeyException;
+import com.qow.util.qon.QONObject;
 import com.qow.util.qon.UntrustedQONException;
 
 import java.io.File;
@@ -13,8 +14,9 @@ public class ServerTest {
         }
         String path = args[0];
 
+        MSM4JProperty property = new MSM4JProperty(new QONObject(new File(path)));
         CommandRule commandRule = new CommandRule();
-        MinecraftServerManager4J msManager = new MinecraftServerManager4J(new File(path), commandRule);
+        MinecraftServerManager4J msManager = new MinecraftServerManager4J(property, commandRule);
         Runtime.getRuntime().addShutdownHook(new Thread(msManager::killProcess));
 
         System.out.println("start MSM4J : " + msManager.start());

@@ -2,7 +2,6 @@ package com.qow.minecraft.server;
 
 import com.qow.util.Webhook;
 import com.qow.util.qon.NoSuchKeyException;
-import com.qow.util.qon.QONObject;
 
 import java.awt.*;
 import java.io.BufferedWriter;
@@ -15,7 +14,7 @@ import java.util.List;
 /**
  * Minecraftのコマンドラインへ送るコマンドを制御する
  *
- * @version 2025/10/08
+ * @version 2025/10/14
  * @since 1.0.0
  */
 public class CommandRule {
@@ -114,12 +113,12 @@ public class CommandRule {
         this.bufferedWriter = bw;
     }
 
-    protected void setWebhook(QONObject qon) throws NoSuchKeyException {
-        webhookUrl = qon.get("webhook-url");
-        serverStatusNotification = Boolean.parseBoolean(qon.get("server-status"));
-        logInOutNotification = Boolean.parseBoolean(qon.get("log-in-out"));
-        if (logInOutNotification) logInOutIndex = Integer.parseInt(qon.get("log-in-out-index"));
-        notificationTimeFormat = qon.get("time-format");
+    protected void setWebhook(MSM4JProperty property) {
+        webhookUrl = property.get("notification_webhook-url");
+        serverStatusNotification = Boolean.parseBoolean(property.get("notification_server-status"));
+        logInOutNotification = Boolean.parseBoolean(property.get("notification_log-in-out"));
+        if (logInOutNotification) logInOutIndex = Integer.parseInt(property.get("notification_log-in-out-index"));
+        notificationTimeFormat = property.get("notification_time-format");
     }
 
     protected void commandsLine(String line) throws IOException, InterruptedException {

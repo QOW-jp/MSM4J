@@ -35,6 +35,10 @@ public class Property {
         targetMap.remove(key);
     }
 
+    public final String get(String key) {
+        return targetMap.get(key);
+    }
+
     public final void addTargetKey(String key) {
         targetKeyList.add(key);
     }

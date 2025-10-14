@@ -1,10 +1,10 @@
 package com.qow.minecraft.server;
 
 import com.qow.util.Logger;
+import com.qow.util.Property;
 import com.qow.util.ThreadStopper;
 import com.qow.util.Webhook;
 import com.qow.util.qon.NoSuchKeyException;
-import com.qow.util.qon.QONObject;
 import net.lingala.zip4j.ZipFile;
 
 import java.awt.*;
@@ -19,12 +19,12 @@ import java.util.Date;
  * Minecraftを実行する{@link ProcessBuilder}を管理する<br>
  * 取得するには{@link CommandRule#getProcessManager()}を使用する
  *
- * @version 2025/10/08
+ * @version 2025/10/14
  * @since 1.0.0
  */
 public class ProcessManager {
     private final ProcessBuilder pb;
-    private final QONObject qonObject;
+    private final Property property;
     private final ThreadStopper stopper;
     private Process process;
     private CommandRule cr;
@@ -33,13 +33,13 @@ public class ProcessManager {
     private boolean loggable;
     private boolean restart;
 
-    protected ProcessManager(QONObject qonObject, String[] exe) throws NoSuchKeyException {
-        this.qonObject = qonObject;
+    protected ProcessManager(Property property, String[] exe) {
+        this.property = property;
         process = null;
         cr = null;
         stopper = new ThreadStopper();
 
-        String HOME_PATH = qonObject.get("home-dir");
+        String HOME_PATH = property.get("home-dir");
         pb = new ProcessBuilder(exe);
         pb.directory(new File(HOME_PATH));
         pb.redirectErrorStream(true);
@@ -55,28 +55,21 @@ public class ProcessManager {
         startProcess = true;
         new Thread(() -> {
             stopper.setReady(false);
-            QONObject notificationJs;
             try {
-                notificationJs = qonObject.getQONObject("notification");
-            } catch (NoSuchKeyException e) {
-                throw new RuntimeException(e);
-            }
-            try {
-                QONObject logJs = qonObject.getQONObject("log");
-                loggable = Boolean.parseBoolean(logJs.get("loggable"));
+                loggable = Boolean.parseBoolean(property.get("log_enable"));
                 if (loggable) {
-                    String logPath = logJs.get("log-dir");
+                    String logPath = property.get("log_directory");
 
                     log = new Logger(logPath);
-                    SimpleDateFormat sdf = new SimpleDateFormat(logJs.get("time-format"));
-                    if (log.requestCreateLogFile(logJs.get("title") + "_" + sdf.format(new Date()) + logJs.get("extension"))) {
+                    SimpleDateFormat sdf = new SimpleDateFormat(property.get("log_time-format"));
+                    if (log.requestCreateLogFile(property.get("log_title") + "_" + sdf.format(new Date()) + property.get("log_extension"))) {
                         throw new RuntimeException();
                     }
                 }
 
-                if (Boolean.parseBoolean(notificationJs.get("server-wave"))) {
+                if (Boolean.parseBoolean(property.get("notification_server-wave"))) {
                     try {
-                        new Webhook(notificationJs.get("webhook-url"), "TRY LAUNCH", Color.GRAY);
+                        new Webhook(property.get("notification_webhook-url"), "TRY LAUNCH", Color.GRAY);
                     } catch (Exception ignored) {
                     }
                 }
@@ -102,7 +95,7 @@ public class ProcessManager {
                 if (loggable) log.close();
                 is.close();
                 br.close();
-            } catch (IOException | InterruptedException | NoSuchKeyException e) {
+            } catch (IOException | InterruptedException e) {
                 throw new RuntimeException(e);
             }
         }).start();
@@ -130,7 +123,7 @@ public class ProcessManager {
 
     /**
      * サーバーのバックアップを保存する<br>
-     * 保存するファイル､保存先のディレクトリは{@link MinecraftServerManager4J#MinecraftServerManager4J(File, CommandRule)}で指定されたconfigファイルが参照される
+     * 保存するファイル､保存先のディレクトリは{@link MinecraftServerManager4J#MinecraftServerManager4J(MSM4JProperty, CommandRule)}で指定されたconfigファイルが参照される
      *
      * @param delay   サーバー停止までの猶予を与える場合true
      * @param restart バックアップ前にサーバーが起動していてバックアップ後に起動する場合true
@@ -138,24 +131,23 @@ public class ProcessManager {
      * @throws InterruptedException 予期せぬ割り込みが発生した場合
      */
     public synchronized void backup(boolean delay, boolean restart) throws IOException, InterruptedException, NoSuchKeyException {
-        QONObject backup = qonObject.getQONObject("backup");
-
-        if (!Boolean.parseBoolean(backup.get("backupable"))) {
+        if (!Boolean.parseBoolean(property.get("backup_enable"))) {
             System.err.println("backupable is false");
             return;
         }
 
-        String backupPath = backup.get("backup-dir");
+        String backupPath = property.get("backup_directory");
 
         boolean wasEnableServer = getServerStatus();
         if (wasEnableServer) {
-            requestStopServer(delay ? Integer.parseInt(backup.get("delay")) : 0, backup.get("comment"));
+            requestStopServer(delay ? Integer.parseInt(property.get("backup_delay")) : 0, property.get("backup_comment"));
             process.waitFor();
         }
 
-        String[] backupFilePaths = backup.getQONArray("backup-files-path").list();
-        SimpleDateFormat sdf = new SimpleDateFormat(backup.get("time-format"));
-        String archivedFileName = backupPath + "/" + backup.get("title") + "_" + sdf.format(new Date()) + backup.get("extension");
+        String backupFilesPath = property.get("backup_backup-files-path");
+        String[] backupFilePaths = backupFilesPath.substring(1, backupFilesPath.length() - 1).split(",\\s*");
+        SimpleDateFormat sdf = new SimpleDateFormat(property.get("backup_time-format"));
+        String archivedFileName = backupPath + "/" + property.get("backup_title") + "_" + sdf.format(new Date()) + property.get("backup_extension");
 
         //親ディレクトリ作成
         Path p = Paths.get(archivedFileName).getParent();
