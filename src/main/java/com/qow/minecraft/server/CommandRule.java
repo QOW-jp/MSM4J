@@ -25,6 +25,7 @@ public class CommandRule {
     private final List<String> playerList;
     private BufferedWriter bufferedWriter;
     private ProcessManager processManager;
+    private Edition edition;
     private String webhookUrl;
     private String notificationTimeFormat;
     private boolean serverStatusNotification, logInOutNotification;
@@ -182,31 +183,42 @@ public class CommandRule {
         }
     }
 
+    protected void setEdition(Edition edition) {
+        this.edition = edition;
+    }
+
     private void logInOut(String line) {
-        if (line.contains("joined the game")) {
-            SimpleDateFormat sdf = new SimpleDateFormat(notificationTimeFormat);
-            //プレイヤー名抜き出し
-            String name = line.split(" ")[logInOutIndex];
-            playerList.add(name);
-            new Webhook(webhookUrl, name + " LOG IN " + sdf.format(new Date()), Color.GREEN);
-        } else if (line.contains("left the game")) {
-            SimpleDateFormat sdf = new SimpleDateFormat(notificationTimeFormat);
-            //プレイヤー名抜き出し
-            String name = line.split(" ")[logInOutIndex];
-            playerList.remove(name);
-            new Webhook(webhookUrl, name + " LOG OUT " + sdf.format(new Date()), Color.RED);
-        } else if (line.contains("Player connected")) {
-            SimpleDateFormat sdf = new SimpleDateFormat(notificationTimeFormat);
-            //プレイヤー名抜き出し
-            String name = line.split(" ")[logInOutIndex].replace(",", "");
-            playerList.add(name);
-            new Webhook(webhookUrl, name + " LOG IN " + sdf.format(new Date()), Color.GREEN);
-        } else if (line.contains("Player disconnected")) {
-            SimpleDateFormat sdf = new SimpleDateFormat(notificationTimeFormat);
-            //プレイヤー名抜き出し
-            String name = line.split(" ")[logInOutIndex].replace(",", "");
-            playerList.remove(name);
-            new Webhook(webhookUrl, name + " LOG OUT " + sdf.format(new Date()), Color.RED);
+        if (edition == Edition.JAVA || edition == Edition.CMD) {
+            if (line.contains("joined the game")) {
+                SimpleDateFormat sdf = new SimpleDateFormat(notificationTimeFormat);
+                //プレイヤー名抜き出し
+                String name = line.split(" ")[logInOutIndex];
+                playerList.add(name);
+                new Webhook(webhookUrl, name + " LOG IN " + sdf.format(new Date()), Color.GREEN);
+                return;
+            } else if (line.contains("left the game")) {
+                SimpleDateFormat sdf = new SimpleDateFormat(notificationTimeFormat);
+                //プレイヤー名抜き出し
+                String name = line.split(" ")[logInOutIndex];
+                playerList.remove(name);
+                new Webhook(webhookUrl, name + " LOG OUT " + sdf.format(new Date()), Color.RED);
+                return;
+            }
+        }
+        if (edition == Edition.BEDROCK || edition == Edition.CMD) {
+            if (line.contains("Player connected")) {
+                SimpleDateFormat sdf = new SimpleDateFormat(notificationTimeFormat);
+                //プレイヤー名抜き出し
+                String name = line.split(" ")[logInOutIndex].replace(",", "");
+                playerList.add(name);
+                new Webhook(webhookUrl, name + " LOG IN " + sdf.format(new Date()), Color.GREEN);
+            } else if (line.contains("Player disconnected")) {
+                SimpleDateFormat sdf = new SimpleDateFormat(notificationTimeFormat);
+                //プレイヤー名抜き出し
+                String name = line.split(" ")[logInOutIndex].replace(",", "");
+                playerList.remove(name);
+                new Webhook(webhookUrl, name + " LOG OUT " + sdf.format(new Date()), Color.RED);
+            }
         }
     }
 
@@ -219,5 +231,4 @@ public class CommandRule {
             new Webhook(webhookUrl, "SERVER STOP " + sdf.format(new Date()), Color.BLACK);
         }
     }
-
 }

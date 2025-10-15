@@ -12,7 +12,7 @@ import java.nio.charset.StandardCharsets;
  * 手動でバックアップなどを取る場合は{@link ProcessManager}を使用する<br>
  * 基本的にqonファイル形式でconfigを管理しており、パスや通知の有無はqonファイルで設定する
  *
- * @version 2025/10/14
+ * @version 2025/10/15
  * @since 1.0.0
  */
 public class MinecraftServerManager4J {
@@ -49,13 +49,14 @@ public class MinecraftServerManager4J {
         }
 
         String serverPath = property.get("server-path");
-        String edition = property.get("edition");
+        Edition edition = Edition.valueOf(property.get("edition"));
 
         this.commandRule = commandRule;
+        commandRule.setEdition(edition);
         commandRule.setWebhook(property);
 
         switch (edition) {
-            case "java" -> {
+            case JAVA -> {
                 String beforeArg = property.get("jvm-args_before");
                 String[] beforeArgs = beforeArg.substring(1, beforeArg.length() - 1).split(",\\s*");
                 String afterArg = property.get("jvm-args_after");
@@ -73,12 +74,12 @@ public class MinecraftServerManager4J {
                 processManager = new ProcessManager(property, exe);
                 processManager.connectCommandRule(commandRule);
             }
-            case "bedrock" -> {
+            case BEDROCK -> {
                 processManager = new ProcessManager(property, new String[]{serverPath});
                 processManager.environment(EXE_BE, ".");
                 processManager.connectCommandRule(commandRule);
             }
-            case "cmd" -> {
+            case CMD -> {
                 processManager = new ProcessManager(property, new String[]{serverPath});
                 processManager.connectCommandRule(commandRule);
             }

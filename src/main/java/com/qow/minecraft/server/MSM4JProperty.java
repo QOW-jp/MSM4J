@@ -6,11 +6,23 @@ import com.qow.util.qon.QONObject;
 
 import java.util.Arrays;
 
+/**
+ * MSM4Jのプロパティ
+ *
+ * @version 2025/10/15
+ * @since 1.5.3
+ */
 public class MSM4JProperty extends Property {
+    /**
+     * qonファイルに保存されているプロパティに従って設定する
+     *
+     * @param qon qonファイル
+     * @throws NoSuchKeyException qonファイルに不備があった場合
+     */
     public MSM4JProperty(QONObject qon) throws NoSuchKeyException {
         this();
 
-        putMap("edition", qon.get("edition"));
+        putMap("edition", qon.get("edition").toUpperCase());
         putMap("home-dir", qon.get("home-dir"));
         putMap("server-path", qon.get("server-path"));
 
@@ -53,6 +65,9 @@ public class MSM4JProperty extends Property {
         putMap("control_protocol-id", control.get("protocol-id"));
     }
 
+    /**
+     * 規定のプロパティを定義する
+     */
     public MSM4JProperty() {
         super();
 
@@ -90,7 +105,7 @@ public class MSM4JProperty extends Property {
     }
 
     public void setEdition(String edition) {
-        putMap("edition", edition);
+        putMap("edition", edition.toUpperCase());
     }
 
     public void setHomeDirectory(String directory) {
