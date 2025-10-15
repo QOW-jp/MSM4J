@@ -10,14 +10,18 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Minecraftのコマンドラインへ送るコマンドを制御する
  *
- * @version 2025/10/14
+ * @version 2025/10/15
  * @since 1.0.0
  */
 public class CommandRule {
+    private final static Pattern PLAYER_COMMENT_PATTERN = Pattern.compile("<.*> (.*)");
+    private final static Pattern PLAYER_NAME_PATTERN = Pattern.compile("<(.*)>");
     private final List<String> playerList;
     private BufferedWriter bufferedWriter;
     private ProcessManager processManager;
@@ -81,7 +85,7 @@ public class CommandRule {
     }
 
     /**
-     * Minecraftのコマンドラインの文字列を引数として呼ばれる<br>
+     * Minecraftのコマンドラインの文字列を引数として呼ぶ<br>
      * 文字列がプレイヤーの発言だった場合を判定する
      *
      * @param line Minecraftのコマンドラインの文字列
@@ -89,11 +93,54 @@ public class CommandRule {
      */
     public boolean isPlayerComment(String line) {
         for (String name : playerList) {
-            if (line.matches(".*<" + name + ">.*")) {
+            if (line.matches("<" + name + ">.*")) {
                 return true;
             }
         }
         return false;
+    }
+
+    /**
+     * Minecraftのコマンドラインの文字列を引数として呼ぶ<br>
+     * コメントの発言者のプレイヤー名を返す
+     *
+     * @param line Minecraftのコマンドラインの文字列
+     * @return プレイヤー名
+     */
+    public String getPlayerName(String line) {
+        Matcher matcher = PLAYER_NAME_PATTERN.matcher(line);
+        if (matcher.find()) {
+            String name = matcher.group(1);
+            for (String player : playerList) {
+                if (player.equals(name)) return name;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Minecraftのコマンドラインの文字列を引数として呼ぶ<br>
+     * プレイヤーが発言したコメントを返す
+     *
+     * @param line Minecraftのコマンドラインの文字列
+     * @return コメント
+     */
+    public String getPlayerComment(String line) {
+        Matcher matcher = PLAYER_COMMENT_PATTERN.matcher(line);
+        if (matcher.find()) {
+            return matcher.group(1);
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * 参加中のプレイヤーの一覧を返す
+     *
+     * @return プレイヤーリスト
+     */
+    public List<String> getPlayerList() {
+        return playerList;
     }
 
     /**
