@@ -47,7 +47,7 @@ backup{
 jvm-args{
     #JVM argument
     before[
-        -Xmx4G
+        -Xmx8G
         -XX:+UnlockExperimentalVMOptions
         -XX:+UseZGC
         -XX:ZUncommitDelay=50
@@ -83,8 +83,8 @@ control{
     server-ip=localhost
     #Client IP (Only when bind-ip=true)
     client-ip=localhost
-    #Server port
-    port=9999
+    #Server port temp file path
+    port-directory=$(home-dir)/msm4j_port.temp
     #Communication protocol
     byte-size=1024
     #Protocol ID
