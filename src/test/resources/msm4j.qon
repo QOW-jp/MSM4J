@@ -92,5 +92,5 @@ control{
     #Communication protocol
     byte-size=1024
     #Protocol ID
-    protocol-id=MSM4J
+    protocol-id=msm4j@$(home-dir)
 }
