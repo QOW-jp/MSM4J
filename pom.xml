@@ -46,9 +46,9 @@
                 <version>3.0.0</version>
                 <configuration>
                     <finalName>test</finalName>
-                    <!--                    <descriptorRefs>-->
-                    <!--                        <descriptorRef>jar-with-dependencies</descriptorRef>-->
-                    <!--                    </descriptorRefs>-->
+<!--                    <descriptorRefs>-->
+<!--                        <descriptorRef>jar-with-dependencies</descriptorRef>-->
+<!--                    </descriptorRefs>-->
                 </configuration>
                 <executions>
                     <execution>
