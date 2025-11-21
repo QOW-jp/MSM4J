@@ -1,4 +1,4 @@
-#qon file 4 msm4j config v1.5.0
+#qon file 4 msm4j config v1.6.0
 #Requirements qon4j v1.1.0 or later
 #Minecraft Edition [java,bedrock,cmd]
 edition=java
@@ -83,8 +83,12 @@ control{
     server-ip=localhost
     #Client IP (Only when bind-ip=true)
     client-ip=localhost
+    #Server port
+    port=9999
+    #Enable auto port
+    auto=true
     #Server port temp file path
-    port-directory=$(home-dir)/msm4j_port.temp
+    port-temp=$(home-dir)/msm4j_port.temp
     #Communication protocol
     byte-size=1024
     #Protocol ID

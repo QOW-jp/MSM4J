@@ -9,7 +9,7 @@ import java.util.Arrays;
 /**
  * MSM4Jのプロパティ
  *
- * @version 2025/10/15
+ * @version 2025/11/21
  * @since 1.5.3
  */
 public class MSM4JProperty extends Property {
@@ -61,6 +61,8 @@ public class MSM4JProperty extends Property {
         putMap("control_server-ip", control.get("server-ip"));
         putMap("control_client-ip", control.get("client-ip"));
         putMap("control_port", control.get("port"));
+        putMap("control_auto", control.get("auto"));
+        putMap("control_port-temp", control.get("port-temp"));
         putMap("control_byte-size", control.get("byte-size"));
         putMap("control_protocol-id", control.get("protocol-id"));
     }
@@ -100,6 +102,8 @@ public class MSM4JProperty extends Property {
         addTargetKey("control_server-ip");
         addTargetKey("control_client-ip");
         addTargetKey("control_port");
+        addTargetKey("control_auto");
+        addTargetKey("control_port-temp");
         addTargetKey("control_byte-size");
         addTargetKey("control_protocol-id");
     }
@@ -132,6 +136,7 @@ public class MSM4JProperty extends Property {
         putMap("backup_directory", directory);
         putMap("backup_delay", String.valueOf(delay));
         putMap("backup_comment", comment);
+        putMap("backup_backup-files-path", Arrays.toString(filesPath));
     }
 
     public void setJVMArgs(String[] before, String[] after) {
@@ -154,6 +159,20 @@ public class MSM4JProperty extends Property {
         putMap("control_server-ip", serverIP);
         putMap("control_client-ip", clientIP);
         putMap("control_port", String.valueOf(port));
+        putMap("control_auto", "false");
+        putMap("control_port-temp", null);
+        putMap("control_byte-size", String.valueOf(byteSize));
+        putMap("control_protocol-id", protocolID);
+    }
+
+    public void setControl(boolean enable, boolean bind, String serverIP, String clientIP, String tempPath, int byteSize, String protocolID) {
+        putMap("control_enable", String.valueOf(enable));
+        putMap("control_bind-ip", String.valueOf(bind));
+        putMap("control_server-ip", serverIP);
+        putMap("control_client-ip", clientIP);
+        putMap("control_port", "0");
+        putMap("control_auto", "true");
+        putMap("control_port-temp", tempPath);
         putMap("control_byte-size", String.valueOf(byteSize));
         putMap("control_protocol-id", protocolID);
     }

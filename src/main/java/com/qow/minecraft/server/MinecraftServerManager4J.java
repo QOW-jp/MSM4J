@@ -1,10 +1,9 @@
 package com.qow.minecraft.server;
 
-import com.qow.util.qon.NoSuchKeyException;
-import com.qow.util.qon.UntrustedQONException;
-
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 /**
  * Minecraftサーバーを管理する<br>
@@ -12,7 +11,7 @@ import java.nio.charset.StandardCharsets;
  * 手動でバックアップなどを取る場合は{@link ProcessManager}を使用する<br>
  * 基本的にqonファイル形式でconfigを管理しており、パスや通知の有無はqonファイルで設定する
  *
- * @version 2025/10/15
+ * @version 2025/11/21
  * @since 1.0.0
  */
 public class MinecraftServerManager4J {
@@ -32,7 +31,7 @@ public class MinecraftServerManager4J {
      * @throws IOException               ファイルが存在しないまたはアクセス権がない場合
      * @throws MinecraftEditionException 非対応のエディションを選択した場合
      */
-    public MinecraftServerManager4J(MSM4JProperty property, CommandRule commandRule) throws IOException, MinecraftEditionException, UntrustedQONException, NoSuchKeyException {
+    public MinecraftServerManager4J(MSM4JProperty property, CommandRule commandRule) throws IOException, MinecraftEditionException {
         if (Boolean.parseBoolean(property.get("control_enable"))) {
             int port = Integer.parseInt(property.get("control_port"));
             int byteSize = Integer.parseInt(property.get("control_byte-size"));
@@ -44,6 +43,17 @@ public class MinecraftServerManager4J {
                 ccs = new CommandControllerServer(port, protocolID, byteSize);
             }
             ccs.setCommandRule(commandRule);
+            boolean autoPorting = Boolean.parseBoolean(property.get("control_auto"));
+            if (autoPorting) {
+                File temp = new File(property.get("control_port-temp"));
+                Path parent = Path.of(temp.getParent());
+                Files.createDirectories(parent);
+                try (FileWriter fw = new FileWriter(temp)) {
+                    try (PrintWriter pw = new PrintWriter(new BufferedWriter(fw))) {
+                        pw.println(ccs.getLocalPort());
+                    }
+                }
+            }
         } else {
             ccs = null;
         }

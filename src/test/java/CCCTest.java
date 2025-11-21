@@ -10,6 +10,5 @@ public class CCCTest {
         String msg = "stop";
         byte[] receive = client.request(msg.getBytes(StandardCharsets.UTF_8));
         System.out.println(new String(receive,StandardCharsets.UTF_8));
-
     }
 }
