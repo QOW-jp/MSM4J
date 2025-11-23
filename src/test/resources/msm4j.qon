@@ -12,12 +12,12 @@ log{
     enable=true
     #log title
     title=log
-    #Log directory
-    directory=$(home-dir)/run_log
-    #Extension
-    extension=.log
     #Time formats that conform to DateTimeFormatter
     time-format=yyyy年MM月dd日HH時mm分ss秒
+    #Extension
+    extension=.log
+    #Log directory
+    directory=$(home-dir)/run_log
 }
 #Backup config
 backup{
@@ -61,7 +61,7 @@ jvm-args{
 #Notification config
 notification{
     #Webhook url
-    webhook-url=https//discord.com/api/webhooks/
+    webhook-url=https//discord.com/api/webhooks/???
     #Enable notifications when attempting to start up/quit
     server-wave=false
     #Enable notifications when startup/quit is successful
