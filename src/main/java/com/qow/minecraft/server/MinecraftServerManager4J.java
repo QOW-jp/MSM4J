@@ -33,7 +33,13 @@ public class MinecraftServerManager4J {
      */
     public MinecraftServerManager4J(MSM4JProperty property, CommandRule commandRule) throws IOException, MinecraftEditionException {
         if (Boolean.parseBoolean(property.get("control_enable"))) {
-            int port = Integer.parseInt(property.get("control_port"));
+            boolean autoPorting = Boolean.parseBoolean(property.get("control_auto"));
+            int port;
+            if (autoPorting) {
+                port = 0;
+            } else {
+                port = Integer.parseInt(property.get("control_port"));
+            }
             int byteSize = Integer.parseInt(property.get("control_byte-size"));
             byte[] protocolID = property.get("control_protocol-id").getBytes(StandardCharsets.UTF_8);
             if (Boolean.parseBoolean(property.get("control_bind-ip"))) {
@@ -43,7 +49,7 @@ public class MinecraftServerManager4J {
                 ccs = new CommandControllerServer(port, protocolID, byteSize);
             }
             ccs.setCommandRule(commandRule);
-            boolean autoPorting = Boolean.parseBoolean(property.get("control_auto"));
+
             if (autoPorting) {
                 File temp = new File(property.get("control_port-temp"));
                 Path parent = Path.of(temp.getParent());
