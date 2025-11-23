@@ -8,6 +8,10 @@ import com.qow.util.qon.UntrustedQONException;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
 import java.util.Scanner;
 
 public class ClientTest {
@@ -21,9 +25,18 @@ public class ClientTest {
         QONObject qonObject = new QONObject(new File(path));
         QONObject control = qonObject.getQONObject("control");
         String hostname = control.get("server-ip");
-        int port = Integer.parseInt(control.get("port"));
         byte[] protocolID = control.get("protocol-id").getBytes(StandardCharsets.UTF_8);
         int byteSize = Integer.parseInt(control.get("byte-size"));
+
+        int port;
+        boolean autoPorting = Boolean.parseBoolean(control.get("auto"));
+        if (autoPorting) {
+            Path portTempPath = Paths.get(control.get("port-temp"));
+            List<String> lines = Files.readAllLines(portTempPath, StandardCharsets.UTF_8);
+            port = Integer.parseInt(lines.get(0));
+        } else {
+            port = Integer.parseInt(control.get("port"));
+        }
 
         CommandControllerClient ccc = new CommandControllerClient(hostname, port, protocolID, byteSize);
 
