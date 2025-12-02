@@ -1,7 +1,6 @@
 package com.qow.minecraft.server;
 
 import com.qow.util.Webhook;
-import com.qow.util.qon.NoSuchKeyException;
 
 import java.awt.*;
 import java.io.BufferedWriter;
@@ -16,7 +15,7 @@ import java.util.regex.Pattern;
 /**
  * Minecraftのコマンドラインへ送るコマンドを制御する
  *
- * @version 2025/10/15
+ * @version 2025/12/02
  * @since 1.0.0
  */
 public class CommandRule {
@@ -50,7 +49,7 @@ public class CommandRule {
             case "BACKUP" -> {
                 try {
                     processManager.backup(true, true);
-                } catch (InterruptedException | NoSuchKeyException e) {
+                } catch (InterruptedException e) {
                     System.out.println(e.getMessage());
                 }
             }

@@ -11,7 +11,7 @@ import java.nio.file.Path;
  * 手動でバックアップなどを取る場合は{@link ProcessManager}を使用する<br>
  * 基本的にqonファイル形式でconfigを管理しており、パスや通知の有無はqonファイルで設定する
  *
- * @version 2025/11/21
+ * @version 2025/12/02
  * @since 1.0.0
  */
 public class MinecraftServerManager4J {
@@ -65,7 +65,12 @@ public class MinecraftServerManager4J {
         }
 
         String serverPath = property.get("server-path");
-        Edition edition = Edition.valueOf(property.get("edition"));
+        Edition edition;
+        try {
+            edition = Edition.valueOf(property.get("edition"));
+        } catch (IllegalArgumentException e) {
+            throw new MinecraftEditionException(e.getMessage());
+        }
 
         this.commandRule = commandRule;
         commandRule.setEdition(edition);
@@ -110,6 +115,13 @@ public class MinecraftServerManager4J {
      */
     public boolean start() {
         return processManager.start();
+    }
+
+    /**
+     * {@link ProcessManager#backup(boolean, boolean)}を呼び出す
+     */
+    public void backup() throws IOException, InterruptedException {
+        processManager.backup(false, true);
     }
 
     /**

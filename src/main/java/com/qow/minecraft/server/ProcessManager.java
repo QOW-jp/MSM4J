@@ -4,7 +4,6 @@ import com.qow.util.Logger;
 import com.qow.util.Property;
 import com.qow.util.ThreadStopper;
 import com.qow.util.Webhook;
-import com.qow.util.qon.NoSuchKeyException;
 import net.lingala.zip4j.ZipFile;
 
 import java.awt.*;
@@ -19,7 +18,7 @@ import java.util.Date;
  * Minecraftを実行する{@link ProcessBuilder}を管理する<br>
  * 取得するには{@link CommandRule#getProcessManager()}を使用する
  *
- * @version 2025/10/14
+ * @version 2025/12/02
  * @since 1.0.0
  */
 public class ProcessManager {
@@ -130,7 +129,7 @@ public class ProcessManager {
      * @throws IOException          Minecraftの起動に失敗していた場合
      * @throws InterruptedException 予期せぬ割り込みが発生した場合
      */
-    public synchronized void backup(boolean delay, boolean restart) throws IOException, InterruptedException, NoSuchKeyException {
+    public synchronized void backup(boolean delay, boolean restart) throws IOException, InterruptedException {
         if (!Boolean.parseBoolean(property.get("backup_enable"))) {
             System.err.println("backupable is false");
             return;
