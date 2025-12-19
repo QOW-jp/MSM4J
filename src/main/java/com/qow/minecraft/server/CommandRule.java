@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
 /**
  * Minecraftのコマンドラインへ送るコマンドを制御する
  *
- * @version 2025/12/02
+ * @version 2025/12/19
  * @since 1.0.0
  */
 public class CommandRule {
@@ -46,13 +46,6 @@ public class CommandRule {
      */
     public void command(String line) throws IOException {
         switch (line) {
-            case "BACKUP" -> {
-                try {
-                    processManager.backup(true, true);
-                } catch (InterruptedException e) {
-                    System.out.println(e.getMessage());
-                }
-            }
             case "START" -> processManager.start();
             case "STOP" -> {
                 if (processManager.getServerStatus()) processManager.requestStopServer(0, "");
@@ -144,7 +137,7 @@ public class CommandRule {
     }
 
     /**
-     * これにより取得した{@link ProcessManager}を用いて{@link ProcessManager#backup(boolean, boolean)}などのネイティブな捜査を行える
+     * これにより取得した{@link ProcessManager}を用いてネイティブな操作を行える
      *
      * @return Minecraftを実行しているProcessManager
      */

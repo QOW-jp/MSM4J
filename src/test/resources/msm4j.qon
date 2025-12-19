@@ -1,4 +1,4 @@
-#qon file 4 msm4j config v1.6.0
+#qon file 4 msm4j config v1.7.0
 #Requirements qon4j v1.1.0 or later
 #Minecraft Edition [java,bedrock,cmd]
 edition=java
@@ -18,30 +18,6 @@ log{
     extension=.log
     #Log directory
     directory=$(home-dir)/run_log
-}
-#Backup config
-backup{
-    #Enable backup
-    enable=true
-    #Backup file title
-    title=MC_SERVER_BK
-    #Time formats that conform to DateTimeFormatter
-    time-format=yyyy年MM月dd日HH時mm分ss秒
-    #Extension
-    extension=.zip
-    #Backup directory
-    directory=$(home-dir)/server-backups
-    #stop server delay
-    delay=10
-    #Notification comment
-    comment=This server will stop for backup after %d seconds.
-    #Backup target files path
-    backup-files-path[
-        $(home-dir)/world
-        $(home-dir)/server.properties
-        $(home-dir)/whitelist.json
-        $(home-dir)/usercache.json
-    ]
 }
 #JVM config
 jvm-args{

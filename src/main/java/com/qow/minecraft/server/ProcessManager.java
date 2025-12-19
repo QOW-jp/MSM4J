@@ -4,13 +4,9 @@ import com.qow.util.Logger;
 import com.qow.util.Property;
 import com.qow.util.ThreadStopper;
 import com.qow.util.Webhook;
-import net.lingala.zip4j.ZipFile;
 
 import java.awt.*;
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -18,7 +14,7 @@ import java.util.Date;
  * Minecraftを実行する{@link ProcessBuilder}を管理する<br>
  * 取得するには{@link CommandRule#getProcessManager()}を使用する
  *
- * @version 2025/12/02
+ * @version 2025/12/19
  * @since 1.0.0
  */
 public class ProcessManager {
@@ -118,56 +114,6 @@ public class ProcessManager {
             }
         }
         cr.command("stop");
-    }
-
-    /**
-     * サーバーのバックアップを保存する<br>
-     * 保存するファイル､保存先のディレクトリは{@link MinecraftServerManager4J#MinecraftServerManager4J(MSM4JProperty, CommandRule)}で指定されたconfigファイルが参照される
-     *
-     * @param delay   サーバー停止までの猶予を与える場合true
-     * @param restart バックアップ前にサーバーが起動していてバックアップ後に起動する場合true
-     * @throws IOException          Minecraftの起動に失敗していた場合
-     * @throws InterruptedException 予期せぬ割り込みが発生した場合
-     */
-    public synchronized void backup(boolean delay, boolean restart) throws IOException, InterruptedException {
-        if (!Boolean.parseBoolean(property.get("backup_enable"))) {
-            System.err.println("backupable is false");
-            return;
-        }
-
-        String backupPath = property.get("backup_directory");
-
-        boolean wasEnableServer = getServerStatus();
-        if (wasEnableServer) {
-            requestStopServer(delay ? Integer.parseInt(property.get("backup_delay")) : 0, property.get("backup_comment"));
-            process.waitFor();
-        }
-
-        String backupFilesPath = property.get("backup_backup-files-path");
-        String[] backupFilePaths = backupFilesPath.substring(1, backupFilesPath.length() - 1).split(",\\s*");
-        SimpleDateFormat sdf = new SimpleDateFormat(property.get("backup_time-format"));
-        String archivedFileName = backupPath + "/" + property.get("backup_title") + "_" + sdf.format(new Date()) + property.get("backup_extension");
-
-        //親ディレクトリ作成
-        Path p = Paths.get(archivedFileName).getParent();
-        Files.createDirectories(p);
-
-        //Zipファイルを作成
-        try (ZipFile zipFile = new ZipFile(archivedFileName)) {
-            for (String backupFilePath : backupFilePaths) {
-                File targetFile = new File(backupFilePath);
-                if (targetFile.isDirectory()) {
-                    zipFile.addFolder(targetFile);
-                } else {
-                    zipFile.addFile(targetFile);
-                }
-            }
-        } catch (Exception e) {
-            System.err.println("failed to archive.");
-            System.out.println(e.getMessage());
-        }
-
-        if (restart && wasEnableServer) start();
     }
 
     /**
