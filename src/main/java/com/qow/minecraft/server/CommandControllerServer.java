@@ -86,25 +86,10 @@ public class CommandControllerServer extends TCPServer implements Runnable {
             run = false;
         }
         try {
-            if (read(line)) {
-                commandRule.command(line);
-            }
+            commandRule.commandServer(line);
         } catch (IOException e) {
             System.err.println(e.getMessage());
         }
         return line.getBytes(StandardCharsets.UTF_8);
-    }
-
-
-    /**
-     * {@link CommandControllerClient}から受信した文字列を引数に呼び出される｡
-     * オーバーライドすることによりゲーム内部のコメントと{@link CommandControllerClient}で呼び出されるかの差別化が可能｡
-     * 戻り値は引数の文字列を{@link CommandRule#command(String)}に送るかを決める｡
-     *
-     * @param line {@link CommandControllerServer#listeningRequest()}で受信した文字列
-     * @return 受信した文字列をコマンドラインに流す場合True
-     */
-    public boolean read(String line) {
-        return true;
     }
 }

@@ -39,16 +39,55 @@ public class CommandRule {
     }
 
     /**
-     * {@link ProcessManager}で実行中のコマンドラインに入力する
+     * {@link ProcessManager}で実行中の場合､コマンドラインに入力する｡
      *
      * @param line 入力する文字列
      * @throws IOException {@link ProcessManager}のコマンドラインが無効化されていた場合またはバックアップに不備があった場合
      */
     public void command(String line) throws IOException {
+        if (!processManager.getServerStatus()) return;
+        processManager.log(line);
+        bufferedWriter.write(line);
+        bufferedWriter.newLine();
+        bufferedWriter.flush();
+    }
+
+    /**
+     * Minecraftのコマンドラインの文字列を引数として呼ばれる｡<br>
+     * このメソッドをオーバーライドして特定の文字列に反応する処理を実行できる｡
+     *
+     * @param line Minecraftのコマンドラインの文字列
+     */
+    public void listeningCommandLine(String line) {
+
+    }
+
+    /**
+     * {@link CommandControllerServer#listeningRequest()}により受信した文字列を引数として呼ばれる｡<br>
+     * このメソッドをオーバーライドして特定の文字列に反応する処理を実行できる｡<br>
+     * 戻り値がTrueの場合受信した文字列を{@link CommandRule#command(String)}に渡すことでMinecraftコマンドラインに送る｡
+     *
+     * @param line 受信した文字列
+     * @return 受信した文字列を{@link CommandRule#command(String)}にわたす場合True
+     */
+    public boolean listeningCommandServer(String line) {
+        return true;
+    }
+
+
+    /**
+     * {@link CommandControllerServer#listeningRequest()}により受信した文字列を引数として良荒れる｡<br>
+     * START,STOP,RESTARTは予約されたコマンドとして実行され､それ以外は{@link CommandRule#listeningCommandServer(String)}の引数として渡される｡
+     *
+     * @param line 受信した文字列
+     */
+    protected void commandServer(String line) throws IOException {
         switch (line) {
             case "START" -> processManager.start();
             case "STOP" -> {
-                if (processManager.getServerStatus()) processManager.requestStopServer(0, "");
+                if (processManager.getServerStatus()) {
+                    processManager.requestStopServer(0, "");
+                }
             }
             case "RESTART" -> {
                 try {
@@ -58,23 +97,9 @@ public class CommandRule {
                 }
             }
             default -> {
-                if (!processManager.getServerStatus()) return;
-                processManager.log(line);
-                bufferedWriter.write(line);
-                bufferedWriter.newLine();
-                bufferedWriter.flush();
+                if (listeningCommandServer(line)) command(line);
             }
         }
-    }
-
-    /**
-     * Minecraftのコマンドラインの文字列を引数として呼ばれる<br>
-     * このメソッドをオーバーライドして特定の文字列に反応する処理を実行できる
-     *
-     * @param line Minecraftのコマンドラインの文字列
-     */
-    public void commandLine(String line) {
-
     }
 
     /**
@@ -162,7 +187,7 @@ public class CommandRule {
     }
 
     protected void commandsLine(String line) throws IOException, InterruptedException {
-        commandLine(line);
+        listeningCommandLine(line);
 
         if (isPlayerComment(line)) return;
         if (serverStatusNotification) serverStatus(line);

@@ -7,7 +7,7 @@ import java.nio.file.Path;
 
 /**
  * Minecraftサーバーを管理する<br>
- * サーバーの起動から停止、再起動、バックアップ、ログが可能で{@link CommandRule#commandLine(String)}から実行結果を取得でき{@link CommandRule#command(String)}でコマンドラインからのコマンド実行も可能<br>
+ * サーバーの起動から停止、再起動、バックアップ、ログが可能で{@link CommandRule#listeningCommandLine(String)}から実行結果を取得でき{@link CommandRule#command(String)}でコマンドラインからのコマンド実行も可能<br>
  * 手動でバックアップなどを取る場合は{@link ProcessManager}を使用する<br>
  * 基本的にqonファイル形式でconfigを管理しており、パスや通知の有無はqonファイルで設定する
  *
