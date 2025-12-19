@@ -6,7 +6,7 @@
 
     <groupId>com.qow</groupId>
     <artifactId>msm4j</artifactId>
-    <version>1.7.0</version>
+    <version>1.7.1</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -30,11 +30,6 @@
             <groupId>com.qow</groupId>
             <artifactId>util</artifactId>
             <version>1.0.2</version>
-        </dependency>
-        <dependency>
-            <groupId>net.lingala.zip4j</groupId>
-            <artifactId>zip4j</artifactId>
-            <version>2.11.5</version>
         </dependency>
     </dependencies>
 
