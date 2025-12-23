@@ -154,7 +154,7 @@ public class MinecraftServerManager4J {
     public synchronized int waitFor() throws InterruptedException {
         int exitCode;
         do {
-            exitCode = processManager.waitFor();
+            exitCode = processManager.waitForProcess();
         } while (processManager.isRestart());
         return exitCode;
     }

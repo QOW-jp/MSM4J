@@ -9,7 +9,7 @@ import java.util.Arrays;
 /**
  * MSM4Jのプロパティ
  *
- * @version 2025/11/21
+ * @version 2025/12/19
  * @since 1.5.3
  */
 public class MSM4JProperty extends Property {
@@ -32,16 +32,6 @@ public class MSM4JProperty extends Property {
         putMap("log_time-format", log.get("time-format"));
         putMap("log_extension", log.get("extension"));
         putMap("log_directory", log.get("directory"));
-
-        QONObject backup = qon.getQONObject("backup");
-        putMap("backup_enable", backup.get("enable"));
-        putMap("backup_title", backup.get("title"));
-        putMap("backup_time-format", backup.get("time-format"));
-        putMap("backup_extension", backup.get("extension"));
-        putMap("backup_directory", backup.get("directory"));
-        putMap("backup_delay", backup.get("delay"));
-        putMap("backup_comment", backup.get("comment"));
-        putMap("backup_backup-files-path", Arrays.toString(backup.getQONArray("backup-files-path").list()));
 
         QONObject jvm = qon.getQONObject("jvm-args");
         putMap("jvm-args_before", Arrays.toString(jvm.getQONArray("before").list()));

@@ -163,7 +163,7 @@ public class ProcessManager {
         stopper.stop();
     }
 
-    protected int waitFor() throws InterruptedException {
+    public final int waitForProcess() throws InterruptedException {
         waitForProcessStart();
         if (process == null) return -1;
         return process.waitFor();
