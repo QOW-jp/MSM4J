@@ -51,7 +51,7 @@ public class MSM4JProperty extends Property {
         putMap("control_server-ip", control.get("server-ip"));
         putMap("control_client-ip", control.get("client-ip"));
         putMap("control_port", control.get("port"));
-        putMap("control_auto-porting", control.get("auto"));
+        putMap("control_auto-porting", control.get("auto-porting"));
         putMap("control_port-temp", control.get("port-temp"));
         putMap("control_byte-size", control.get("byte-size"));
         putMap("control_protocol-id", control.get("protocol-id"));
@@ -141,7 +141,7 @@ public class MSM4JProperty extends Property {
         putMap("control_server-ip", serverIP);
         putMap("control_client-ip", clientIP);
         putMap("control_port", String.valueOf(port));
-        putMap("control_auto", "false");
+        putMap("control_auto-porting", "false");
         putMap("control_port-temp", null);
         putMap("control_byte-size", String.valueOf(byteSize));
         putMap("control_protocol-id", protocolID);
