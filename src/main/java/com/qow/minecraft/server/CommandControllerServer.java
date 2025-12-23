@@ -1,7 +1,7 @@
 package com.qow.minecraft.server;
 
-import com.qow.qtcp.TCPServer;
-import com.qow.qtcp.UntrustedConnectException;
+import com.qow.net.qtcp.TCPServer;
+import com.qow.net.UntrustedConnectException;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
