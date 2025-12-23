@@ -6,7 +6,7 @@
 
     <groupId>com.qow</groupId>
     <artifactId>msm4j</artifactId>
-    <version>1.7.6</version>
+    <version>1.7.7</version>
     <packaging>jar</packaging>
 
     <properties>

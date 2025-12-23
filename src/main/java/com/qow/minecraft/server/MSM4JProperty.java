@@ -51,7 +51,7 @@ public class MSM4JProperty extends Property {
         putMap("control_server-ip", control.get("server-ip"));
         putMap("control_client-ip", control.get("client-ip"));
         putMap("control_port", control.get("port"));
-        putMap("control_auto", control.get("auto"));
+        putMap("control_auto-porting", control.get("auto"));
         putMap("control_port-temp", control.get("port-temp"));
         putMap("control_byte-size", control.get("byte-size"));
         putMap("control_protocol-id", control.get("protocol-id"));
@@ -84,7 +84,7 @@ public class MSM4JProperty extends Property {
         addTargetKey("control_server-ip");
         addTargetKey("control_client-ip");
         addTargetKey("control_port");
-        addTargetKey("control_auto");
+        addTargetKey("control_auto-porting");
         addTargetKey("control_port-temp");
         addTargetKey("control_byte-size");
         addTargetKey("control_protocol-id");

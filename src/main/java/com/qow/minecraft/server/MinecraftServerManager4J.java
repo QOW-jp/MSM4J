@@ -11,7 +11,7 @@ import java.nio.file.Path;
  * 手動でバックアップなどを取る場合は{@link ProcessManager}を使用する<br>
  * 基本的にqonファイル形式でconfigを管理しており、パスや通知の有無はqonファイルで設定する
  *
- * @version 2025/12/19
+ * @version 2025/12/23
  * @since 1.0.0
  */
 public class MinecraftServerManager4J {
@@ -33,7 +33,7 @@ public class MinecraftServerManager4J {
      */
     public MinecraftServerManager4J(MSM4JProperty property, CommandRule commandRule) throws IOException, MinecraftEditionException {
         if (Boolean.parseBoolean(property.get("control_enable"))) {
-            boolean autoPorting = Boolean.parseBoolean(property.get("control_auto"));
+            boolean autoPorting = Boolean.parseBoolean(property.get("control_auto-porting"));
             int port;
             if (autoPorting) {
                 port = 0;
