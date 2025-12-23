@@ -14,7 +14,7 @@ import java.util.Date;
  * Minecraftを実行する{@link ProcessBuilder}を管理する<br>
  * 取得するには{@link CommandRule#getProcessManager()}を使用する
  *
- * @version 2025/12/19
+ * @version 2025/12/23
  * @since 1.0.0
  */
 public class ProcessManager {
@@ -106,11 +106,10 @@ public class ProcessManager {
      */
     public void requestStopServer(int seconds, String comment) throws IOException {
         if (0 < seconds) {
-            cr.command("say " + String.format(comment, seconds));
+            cr.command("say " + comment);
             try {
                 Thread.sleep(seconds * 1000L);
-            } catch (InterruptedException e) {
-                cr.command("say <Error> failed");
+            } catch (InterruptedException ignored) {
             }
         }
         cr.command("stop");

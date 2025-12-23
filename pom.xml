@@ -6,7 +6,7 @@
 
     <groupId>com.qow</groupId>
     <artifactId>msm4j</artifactId>
-    <version>1.7.5</version>
+    <version>1.7.6</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -24,7 +24,7 @@
         <dependency>
             <groupId>com.qow</groupId>
             <artifactId>qtcp</artifactId>
-            <version>1.1.9</version>
+            <version>1.1.10</version>
         </dependency>
         <dependency>
             <groupId>com.qow</groupId>
