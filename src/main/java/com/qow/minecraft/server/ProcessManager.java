@@ -86,6 +86,7 @@ public class ProcessManager {
                     log(line);
                 }
                 startProcess = false;
+                cr.reset();
 
                 if (loggable) log.close();
                 is.close();

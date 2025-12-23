@@ -39,6 +39,13 @@ public class CommandRule {
     }
 
     /**
+     * プレキ記録を初期化
+     */
+    public void reset() {
+        playerList.clear();
+    }
+
+    /**
      * {@link ProcessManager}で実行中の場合､コマンドラインに入力する｡
      *
      * @param line 入力する文字列
