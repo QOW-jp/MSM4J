@@ -71,14 +71,6 @@ public class MSM4JProperty extends Property {
         addTargetKey("log_time-format");
         addTargetKey("log_extension");
         addTargetKey("log_directory");
-        addTargetKey("backup_enable");
-        addTargetKey("backup_title");
-        addTargetKey("backup_time-format");
-        addTargetKey("backup_extension");
-        addTargetKey("backup_directory");
-        addTargetKey("backup_delay");
-        addTargetKey("backup_comment");
-        addTargetKey("backup_backup-files-path");
         addTargetKey("jvm-args_before");
         addTargetKey("jvm-args_after");
         addTargetKey("notification_webhook-url");
