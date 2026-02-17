@@ -16,7 +16,7 @@ public class ServerTest {
 
         MSM4JProperty property = new MSM4JProperty(new QONObject(new File(path)));
         CommandRule commandRule = new CommandRule();
-        MinecraftServerManager4J msManager = new MinecraftServerManager4J(property, commandRule);
+        MinecraftSM4J msManager = new MinecraftSM4J(property, commandRule);
         Runtime.getRuntime().addShutdownHook(new Thread(msManager::killProcess));
 
         System.out.println("start MSM4J : " + msManager.start());

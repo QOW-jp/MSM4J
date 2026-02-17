@@ -6,15 +6,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 /**
- * Minecraftサーバーを管理する<br>
- * サーバーの起動から停止、再起動、バックアップ、ログが可能で{@link CommandRule#listeningCommandLine(String)}から実行結果を取得でき{@link CommandRule#command(String)}でコマンドラインからのコマンド実行も可能<br>
- * 手動でバックアップなどを取る場合は{@link ProcessManager}を使用する<br>
- * 基本的にqonファイル形式でconfigを管理しており、パスや通知の有無はqonファイルで設定する
+ * Minecraftサーバーを管理する。<br>
+ * サーバーの起動から停止、再起動、バックアップ、ログが可能で{@link CommandRule#listeningCommandLine(String)}から実行結果を取得でき{@link CommandRule#command(String)}でコマンドラインからのコマンド実行も可能。<br>
+ * 手動でバックアップなどを取る場合は{@link ProcessManager}を使用する。<br>
+ * 基本的にqonファイル形式でconfigを管理しており、パスや通知の有無はqonファイルで設定する。<br>
  *
- * @version 2025/12/23
+ * @version 2026/02/17
  * @since 1.0.0
  */
-public class MinecraftServerManager4J {
+public class MinecraftSM4J {
     private final static String EXE_BE = "LD_LIBRARY_PATH";
     private final static String EXE_JE = "java";
 
@@ -23,15 +23,16 @@ public class MinecraftServerManager4J {
     private final CommandRule commandRule;
 
     /**
-     * プロパティに従いパス、エディションを設定する<br>
-     * {@link CommandControllerServer}を初期化する
+     * MinecraftServerManager4Java<br>
+     * プロパティに従いパス、エディションを設定する。<br>
+     * {@link CommandControllerServer}を初期化する。
      *
      * @param property    プロパティ
      * @param commandRule 設定する{@link CommandRule}
      * @throws IOException               ファイルが存在しないまたはアクセス権がない場合
      * @throws MinecraftEditionException 非対応のエディションを選択した場合
      */
-    public MinecraftServerManager4J(MSM4JProperty property, CommandRule commandRule) throws IOException, MinecraftEditionException {
+    public MinecraftSM4J(MSM4JProperty property, CommandRule commandRule) throws IOException, MinecraftEditionException {
         if (Boolean.parseBoolean(property.get("control_enable"))) {
             boolean autoPorting = Boolean.parseBoolean(property.get("control_auto-porting"));
             int port;

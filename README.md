@@ -1,4 +1,4 @@
-# MSM4J (MinecraftServerManager4J)
+# MSM4J (MinecraftServerManager4Java)
 
 ### Requirements
 
@@ -18,17 +18,17 @@ Java 17 or later
     <dependency>
         <groupId>com.qow</groupId>
         <artifactId>qon4j</artifactId>
-        <version>1.1.0</version>
+        <version>1.3.1</version>
     </dependency>
     <dependency>
         <groupId>com.qow</groupId>
         <artifactId>qtcp</artifactId>
-        <version>1.1.1</version>
+        <version>1.2.0</version>
     </dependency>
     <dependency>
-        <groupId>net.lingala.zip4j</groupId>
-        <artifactId>zip4j</artifactId>
-        <version>2.11.5</version>
+        <groupId>com.qow</groupId>
+        <artifactId>util</artifactId>
+        <version>1.0.3</version>
     </dependency>
 </dependencies>
 ```
@@ -44,24 +44,26 @@ args[0] = qonPath
 ```
 
 #### ServerTest.java
-
 ```java
 import com.qow.minecraft.server.*;
+import com.qow.util.qon.NoSuchKeyException;
+import com.qow.util.qon.QONObject;
 import com.qow.util.qon.UntrustedQONException;
 
 import java.io.File;
 import java.io.IOException;
 
 public class ServerTest {
-    public static void main(String[] args) throws InterruptedException, IOException, MinecraftEditionException, UntrustedQONException {
+    public static void main(String[] args) throws InterruptedException, IOException, MinecraftEditionException, UntrustedQONException, NoSuchKeyException {
         if (args.length != 1) {
             System.err.println("args.length is not 1");
             System.exit(2);
         }
         String path = args[0];
 
+        MSM4JProperty property = new MSM4JProperty(new QONObject(new File(path)));
         CommandRule commandRule = new CommandRule();
-        MinecraftServerManager4J msManager = new MinecraftServerManager4J(new File(path), commandRule);
+        MinecraftSM4J msManager = new MinecraftSM4J(property, commandRule);
         Runtime.getRuntime().addShutdownHook(new Thread(msManager::killProcess));
 
         System.out.println("start MSM4J : " + msManager.start());
@@ -80,23 +82,28 @@ public class ServerTest {
         }
     }
 }
-
 ```
 
 #### ClientTest.java
-
 ```java
 import com.qow.minecraft.server.CommandControllerClient;
-import com.qow.qtcp.UntrustedConnectException;
+import com.qow.net.ClosedServerException;
+import com.qow.net.UntrustedConnectException;
+import com.qow.util.qon.NoSuchKeyException;
 import com.qow.util.qon.QONObject;
 import com.qow.util.qon.UntrustedQONException;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
 import java.util.Scanner;
 
 public class ClientTest {
-    public static void main(String[] args) throws IOException, UntrustedQONException, UntrustedConnectException {
+    public static void main(String[] args) throws IOException, UntrustedQONException, UntrustedConnectException, ClosedServerException, NoSuchKeyException {
         if (args.length != 1) {
             System.err.println("args.length is not 1");
             System.exit(2);
@@ -106,10 +113,20 @@ public class ClientTest {
         QONObject qonObject = new QONObject(new File(path));
         QONObject control = qonObject.getQONObject("control");
         String hostname = control.get("server-ip");
-        int port = Integer.parseInt(control.get("port"));
+        byte[] protocolID = control.get("protocol-id").getBytes(StandardCharsets.UTF_8);
         int byteSize = Integer.parseInt(control.get("byte-size"));
 
-        CommandControllerClient ccc = new CommandControllerClient(hostname, port, byteSize);
+        int port;
+        boolean autoPorting = Boolean.parseBoolean(control.get("auto"));
+        if (autoPorting) {
+            Path portTempPath = Paths.get(control.get("port-temp"));
+            List<String> lines = Files.readAllLines(portTempPath, StandardCharsets.UTF_8);
+            port = Integer.parseInt(lines.get(0));
+        } else {
+            port = Integer.parseInt(control.get("port"));
+        }
+
+        CommandControllerClient ccc = new CommandControllerClient(hostname, port, protocolID, byteSize);
 
         Scanner sc = new Scanner(System.in);
 
@@ -132,8 +149,8 @@ public class ClientTest {
 #### msm4jconfig.qon
 
 ```qon
-#qon file 4 msm4j config
-#Requirements qon4j v1.1.0
+#qon file 4 msm4j config v1.7.0
+#Requirements qon4j v1.1.0 or later
 #Minecraft Edition [java,bedrock,cmd]
 edition=java
 #Home path
@@ -143,45 +160,21 @@ server-path=$(home-dir)/server.jar
 #Log config
 log{
     #Enable log
-    loggable=true
+    enable=true
     #log title
     title=log
+    #Time formats that conform to DateTimeFormatter
+    time-format=yyyy年MM月dd日HH時mm分ss秒
     #Extension
     extension=.log
-    #Time formats that conform to DateTimeFormatter
-    time-format=yyyy年MM月dd日HH時mm分ss秒
     #Log directory
-    log-dir=$(home-dir)/run_log
-}
-#Backup config
-backup{
-    #Enable backup
-    backupable=true
-    #stop server delay
-    delay=10
-    #Notification comment
-    comment=This server will stop for backup after %d seconds.
-    #Backup file title
-    title=MC_SERVER_BK
-    #Extension
-    extension=.zip
-    #Time formats that conform to DateTimeFormatter
-    time-format=yyyy年MM月dd日HH時mm分ss秒
-    #Backup directory
-    backup-dir=$(home-dir)/server-backups
-    #Backup target files path
-    backup-files-path[
-        $(home-dir)/world
-        $(home-dir)/server.properties
-        $(home-dir)/whitelist.json
-        $(home-dir)/usercache.json
-    ]
+    directory=$(home-dir)/run_log
 }
 #JVM config
 jvm-args{
     #JVM argument
     before[
-        -Xmx4G
+        -Xmx8G
         -XX:+UnlockExperimentalVMOptions
         -XX:+UseZGC
         -XX:ZUncommitDelay=50
@@ -195,7 +188,7 @@ jvm-args{
 #Notification config
 notification{
     #Webhook url
-    webhook-url=https//discord.com/api/webhooks/
+    webhook-url=https//discord.com/api/webhooks/???
     #Enable notifications when attempting to start up/quit
     server-wave=false
     #Enable notifications when startup/quit is successful
@@ -210,7 +203,7 @@ notification{
 #Control config
 control{
     #Enable control
-    controllable=true
+    enable=true
     #Enable bind IP
     bind-ip=true
     #Server IP
@@ -219,7 +212,13 @@ control{
     client-ip=localhost
     #Server port
     port=9999
+    #Enable auto port
+    auto=true
+    #Server port temp file path
+    port-temp=$(home-dir)/msm4j_port.temp
     #Communication protocol
     byte-size=1024
+    #Protocol ID
+    protocol-id=msm4j@$(home-dir)
 }
 ```

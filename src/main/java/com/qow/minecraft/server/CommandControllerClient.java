@@ -4,6 +4,7 @@ import com.qow.net.ClosedServerException;
 import com.qow.net.UntrustedConnectException;
 import com.qow.net.qtcp.TCPClient;
 
+import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
 
 /**
@@ -35,9 +36,9 @@ public class CommandControllerClient extends TCPClient {
      * @throws UntrustedConnectException プロトコルIDが違った場合
      * @throws ClosedServerException     サーバーが存在しない場合
      */
-    public boolean command(String line) throws UntrustedConnectException, ClosedServerException {
+    public boolean command(String line) throws UntrustedConnectException, ClosedServerException, SocketTimeoutException {
         //文字列をUTF-8形式のバイト配列に変換して送受信
-        byte[] receiveData = request(line.getBytes(StandardCharsets.UTF_8));
+        byte[] receiveData = request(line.getBytes(StandardCharsets.UTF_8), true);
         String receiveLine = new String(receiveData, StandardCharsets.UTF_8);
 
         return line.equals(receiveLine);
