@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
 /**
  * Minecraftのコマンドラインへ送るコマンドを制御する
  *
- * @version 2025/12/19
+ * @version 2026/02/17
  * @since 1.0.0
  */
 public class CommandRule {
@@ -30,16 +30,19 @@ public class CommandRule {
     private boolean serverStatusNotification, logInOutNotification;
     private int logInOutIndex;
 
+    private boolean activatedServer;
+
     /**
      * コマンド出力バッファーとプレイヤーネームリストの初期化
      */
     public CommandRule() {
         playerList = new ArrayList<>();
         bufferedWriter = null;
+        activatedServer = false;
     }
 
     /**
-     * プレキ記録を初期化
+     * プレイヤー記録を初期化
      */
     public void reset() {
         playerList.clear();
@@ -215,14 +218,12 @@ public class CommandRule {
         if (edition == Edition.JAVA || edition == Edition.CMD) {
             if (line.contains("joined the game")) {
                 SimpleDateFormat sdf = new SimpleDateFormat(notificationTimeFormat);
-                //プレイヤー名抜き出し
                 String name = line.split(" ")[logInOutIndex];
                 playerList.add(name);
                 new Webhook(webhookUrl, name + " LOG IN " + sdf.format(new Date()), Color.GREEN);
                 return;
             } else if (line.contains("left the game")) {
                 SimpleDateFormat sdf = new SimpleDateFormat(notificationTimeFormat);
-                //プレイヤー名抜き出し
                 String name = line.split(" ")[logInOutIndex];
                 playerList.remove(name);
                 new Webhook(webhookUrl, name + " LOG OUT " + sdf.format(new Date()), Color.RED);
@@ -232,13 +233,11 @@ public class CommandRule {
         if (edition == Edition.BEDROCK || edition == Edition.CMD) {
             if (line.contains("Player connected")) {
                 SimpleDateFormat sdf = new SimpleDateFormat(notificationTimeFormat);
-                //プレイヤー名抜き出し
                 String name = line.split(" ")[logInOutIndex].replace(",", "");
                 playerList.add(name);
                 new Webhook(webhookUrl, name + " LOG IN " + sdf.format(new Date()), Color.GREEN);
             } else if (line.contains("Player disconnected")) {
                 SimpleDateFormat sdf = new SimpleDateFormat(notificationTimeFormat);
-                //プレイヤー名抜き出し
                 String name = line.split(" ")[logInOutIndex].replace(",", "");
                 playerList.remove(name);
                 new Webhook(webhookUrl, name + " LOG OUT " + sdf.format(new Date()), Color.RED);
@@ -247,12 +246,18 @@ public class CommandRule {
     }
 
     private void serverStatus(String line) {
-        if (line.contains("]: Done") || line.endsWith("Server started.")) {
-            SimpleDateFormat sdf = new SimpleDateFormat(notificationTimeFormat);
-            new Webhook(webhookUrl, "SERVER START " + sdf.format(new Date()), Color.WHITE);
-        } else if (line.contains("]: Stopping the server") || line.endsWith("Stopping server...")) {
-            SimpleDateFormat sdf = new SimpleDateFormat(notificationTimeFormat);
-            new Webhook(webhookUrl, "SERVER STOP " + sdf.format(new Date()), Color.BLACK);
+        if (activatedServer) {
+            if ((edition == Edition.JAVA && line.contains("]: Stopping the server")) || (edition == Edition.BEDROCK && line.endsWith("Stopping server..."))) {
+                activatedServer = false;
+                SimpleDateFormat sdf = new SimpleDateFormat(notificationTimeFormat);
+                new Webhook(webhookUrl, "SERVER STOP " + sdf.format(new Date()), Color.BLACK);
+            }
+        } else {
+            if ((edition == Edition.JAVA && line.contains("]: Done")) || (edition == Edition.BEDROCK && line.endsWith("Server started."))) {
+                activatedServer = true;
+                SimpleDateFormat sdf = new SimpleDateFormat(notificationTimeFormat);
+                new Webhook(webhookUrl, "SERVER START " + sdf.format(new Date()), Color.WHITE);
+            }
         }
     }
 }

@@ -1,8 +1,8 @@
 package com.qow.minecraft.server;
 
 import com.qow.net.ClosedServerException;
-import com.qow.net.qtcp.TCPClient;
 import com.qow.net.UntrustedConnectException;
+import com.qow.net.qtcp.TCPClient;
 
 import java.nio.charset.StandardCharsets;
 
@@ -25,7 +25,6 @@ public class CommandControllerClient extends TCPClient {
         super(host, port, protocolID);
         setByteSize(byteSize);
     }
-
 
     /**
      * {@link CommandControllerServer}へ通信する<br>

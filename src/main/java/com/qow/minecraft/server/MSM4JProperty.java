@@ -9,7 +9,7 @@ import java.util.Arrays;
 /**
  * MSM4Jのプロパティ
  *
- * @version 2025/12/19
+ * @version 2026/02/17
  * @since 1.5.3
  */
 public class MSM4JProperty extends Property {
@@ -90,18 +90,42 @@ public class MSM4JProperty extends Property {
         addTargetKey("control_protocol-id");
     }
 
+    /**
+     * エディションの設定をする。
+     *
+     * @param edition エディション
+     */
     public void setEdition(String edition) {
         putMap("edition", edition.toUpperCase());
     }
 
+    /**
+     * ホームディレクトリの設定をする。
+     *
+     * @param directory ホームディレクトリ
+     */
     public void setHomeDirectory(String directory) {
         putMap("home-dir", directory);
     }
 
+    /**
+     * 実行ファイルのパスを設定する。
+     *
+     * @param path サーバー実行ファイルのパス
+     */
     public void setServerPath(String path) {
         putMap("server-path", path);
     }
 
+    /**
+     * ログに関する設定をする。
+     *
+     * @param enable     有効化
+     * @param title      ログファイル名
+     * @param timeFormat ログファイルの時間形式
+     * @param extension  ログファイル拡張子
+     * @param directory  ログファイルを保存するディレクトリ
+     */
     public void setLog(boolean enable, String title, String timeFormat, String extension, String directory) {
         putMap("log_enable", String.valueOf(enable));
         putMap("log_title", title);
@@ -110,6 +134,18 @@ public class MSM4JProperty extends Property {
         putMap("log_directory", directory);
     }
 
+    /**
+     * バックアップに関する設定をする。
+     *
+     * @param enable     有効化
+     * @param title      バックアップファイル名
+     * @param timeFormat バックアップファイルの時間形式
+     * @param extension  バックアップファイル拡張子
+     * @param directory  バックアップファイルを保存するディレクトリ
+     * @param delay      バックアップを実行するまでの猶予時間
+     * @param comment    バックアップ予告メッセージ
+     * @param filesPath  バックアップ対象のパス
+     */
     public void setBackup(boolean enable, String title, String timeFormat, String extension, String directory, int delay, String comment, String[] filesPath) {
         putMap("backup_enable", String.valueOf(enable));
         putMap("backup_title", title);
@@ -121,11 +157,27 @@ public class MSM4JProperty extends Property {
         putMap("backup_backup-files-path", Arrays.toString(filesPath));
     }
 
+    /**
+     * サーバーのJVM引数とサーバーの引数を設定する。
+     *
+     * @param before JVM引数
+     * @param after  サーバー引数
+     */
     public void setJVMArgs(String[] before, String[] after) {
         putMap("jvm-args_before", Arrays.toString(before));
         putMap("jvm-args_after", Arrays.toString(after));
     }
 
+    /**
+     * 通知に関する設定をする。
+     *
+     * @param webhookURL ウェブフックURL
+     * @param wave       サーバー起動宣言の有効化
+     * @param status     サーバー起動時の有効化
+     * @param logInOut   ログインアウト時の有効化
+     * @param timeFormat 時間形式
+     * @param index      プレイヤー名のインデックス
+     */
     public void setNotification(String webhookURL, boolean wave, boolean status, boolean logInOut, String timeFormat, int index) {
         putMap("notification_webhook-url", webhookURL);
         putMap("notification_server-wave", String.valueOf(wave));
@@ -135,6 +187,18 @@ public class MSM4JProperty extends Property {
         putMap("notification_time-format", timeFormat);
     }
 
+    /**
+     * MSM4Jの通信によるサーバー操作の設定をする。
+     * ポート番号固定。
+     *
+     * @param enable     有効化
+     * @param bind       アクセス可能なIPアドレスを制限する
+     * @param serverIP   サーバーIPアドレス
+     * @param clientIP   クライアントIPアドレス
+     * @param port       ポート番号
+     * @param byteSize   通信サイズ
+     * @param protocolID 識別ID
+     */
     public void setControl(boolean enable, boolean bind, String serverIP, String clientIP, int port, int byteSize, String protocolID) {
         putMap("control_enable", String.valueOf(enable));
         putMap("control_bind-ip", String.valueOf(bind));
@@ -147,6 +211,18 @@ public class MSM4JProperty extends Property {
         putMap("control_protocol-id", protocolID);
     }
 
+    /**
+     * MSM4Jの通信によるサーバー操作の設定をする。
+     * ポート番号は自動で割り当てられる。
+     *
+     * @param enable     有効化
+     * @param bind       アクセス可能なIPアドレスを制限する
+     * @param serverIP   サーバーIPアドレス
+     * @param clientIP   クライアントIPアドレス
+     * @param tempPath   ポート番号を一時的に保管するファイルパス
+     * @param byteSize   通信サイズ
+     * @param protocolID 識別ID
+     */
     public void setControl(boolean enable, boolean bind, String serverIP, String clientIP, String tempPath, int byteSize, String protocolID) {
         putMap("control_enable", String.valueOf(enable));
         putMap("control_bind-ip", String.valueOf(bind));
