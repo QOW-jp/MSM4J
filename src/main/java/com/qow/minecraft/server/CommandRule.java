@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
 /**
  * Minecraftのコマンドラインへ送るコマンドを制御する
  *
- * @version 2026/02/17
+ * @version 2026/02/19
  * @since 1.0.0
  */
 public class CommandRule {
@@ -247,17 +247,21 @@ public class CommandRule {
 
     private void serverStatus(String line) {
         if (activatedServer) {
-            if ((edition == Edition.JAVA && line.contains("]: Stopping the server")) || (edition == Edition.BEDROCK && line.endsWith("Stopping server..."))) {
-                activatedServer = false;
-                SimpleDateFormat sdf = new SimpleDateFormat(notificationTimeFormat);
-                new Webhook(webhookUrl, "SERVER STOP " + sdf.format(new Date()), Color.BLACK);
-            }
+            if (edition == Edition.BEDROCK && !line.endsWith("Stopping server...")) return;
+            if (edition == Edition.JAVA && !line.contains("]: Stopping the server")) return;
+            if (edition == Edition.CMD && !line.endsWith("Stopping server...") && !line.contains("]: Stopping the server")) return;
+
+            activatedServer = false;
+            SimpleDateFormat sdf = new SimpleDateFormat(notificationTimeFormat);
+            new Webhook(webhookUrl, "SERVER STOP " + sdf.format(new Date()), Color.BLACK);
         } else {
-            if ((edition == Edition.JAVA && line.contains("]: Done")) || (edition == Edition.BEDROCK && line.endsWith("Server started."))) {
-                activatedServer = true;
-                SimpleDateFormat sdf = new SimpleDateFormat(notificationTimeFormat);
-                new Webhook(webhookUrl, "SERVER START " + sdf.format(new Date()), Color.WHITE);
-            }
+            if (edition == Edition.BEDROCK && !line.endsWith("Server started.")) return;
+            if (edition == Edition.JAVA && !line.contains("]: Done")) return;
+            if (edition == Edition.CMD && !line.endsWith("Server started.") && !line.contains("]: Done")) return;
+
+            activatedServer = true;
+            SimpleDateFormat sdf = new SimpleDateFormat(notificationTimeFormat);
+            new Webhook(webhookUrl, "SERVER START " + sdf.format(new Date()), Color.WHITE);
         }
     }
 }
